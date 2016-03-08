@@ -14,7 +14,7 @@ namespace EffinghamLibraryTests
         [TestInitialize]
         public void Setup()
         {
-            account = new BankAccount(TestName, StartingBalance);
+            account = new TestBankAccount(TestName, StartingBalance);
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace EffinghamLibraryTests
             const decimal openingBalanceInPesos = 1000.0m;
             const decimal openingBalanceInDollars = openingBalanceInPesos / 10;
             const CurrencyType pesos = CurrencyType.Peso;
-            IBankAccountMultipleCurrency pesoAccount = new BankAccount(pesoCustomer, openingBalanceInPesos, pesos);
+            IBankAccountMultipleCurrency pesoAccount = new TestBankAccount(pesoCustomer, openingBalanceInPesos, pesos);
 
             Assert.AreEqual(openingBalanceInDollars, pesoAccount.Balance);
         }
@@ -58,7 +58,7 @@ namespace EffinghamLibraryTests
             const decimal openingBalanceInYen = 1000.0m;
             const decimal openingBalanceInDollars = openingBalanceInYen / 100;
             const CurrencyType yen = CurrencyType.Yen;
-            IBankAccountMultipleCurrency yenAccount = new BankAccount(yenCustomer, openingBalanceInYen, yen);
+            IBankAccountMultipleCurrency yenAccount = new TestBankAccount(yenCustomer, openingBalanceInYen, yen);
 
             Assert.AreEqual(openingBalanceInDollars, yenAccount.Balance);
         }

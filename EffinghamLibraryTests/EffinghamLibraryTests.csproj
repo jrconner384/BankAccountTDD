@@ -59,6 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavingsAccountTests.cs" />
     <Compile Include="CheckingAccountTests.cs" />
+    <Compile Include="TestBankAccount.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EffinghamLibrary\EffinghamLibrary.csproj">

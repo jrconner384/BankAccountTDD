@@ -20,7 +20,7 @@ namespace EffinghamLibraryTests
         [TestInitialize]
         public void Setup()
         {
-            account = new BankAccount(DefaultName, DefaultStartingBalance);
+            account = new TestBankAccount(DefaultName, DefaultStartingBalance);
         }
         #endregion Housekeeping
 
@@ -28,7 +28,7 @@ namespace EffinghamLibraryTests
         [TestMethod]
         public void NewAccountsAreAssignedSequentialValuesTest()
         {
-            IBankAccount secondAccount = new BankAccount(DefaultName, DefaultStartingBalance);
+            IBankAccount secondAccount = new TestBankAccount(DefaultName, DefaultStartingBalance);
 
             Assert.AreEqual(account.AccountNumber + 1, secondAccount.AccountNumber);
         }
@@ -132,7 +132,7 @@ namespace EffinghamLibraryTests
         [ExpectedException(typeof(NullReferenceException))]
         public void ConstructorThrowsExceptionIfGivenNullStringForCustomerNameTest()
         {
-            IBankAccount badInitialize = new BankAccount(null, DefaultStartingBalance);
+            IBankAccount badInitialize = new TestBankAccount(null, DefaultStartingBalance);
         }
 
         [TestMethod]
@@ -140,7 +140,7 @@ namespace EffinghamLibraryTests
         public void ConstructorThrowsExceptionIfGivenNegativeStartingBalanceTest()
         {
             const decimal negative = -1.0m;
-            IBankAccount badInitialize = new BankAccount(DefaultName, negative);
+            IBankAccount badInitialize = new TestBankAccount(DefaultName, negative);
         }
 
         [TestMethod]
@@ -148,7 +148,7 @@ namespace EffinghamLibraryTests
         public void ConstructorThrowsExceptionIfGivenOneCharacterStringTest()
         {
             const string oneChar = "a";
-            IBankAccount badInitialize = new BankAccount(oneChar, DefaultStartingBalance);
+            IBankAccount badInitialize = new TestBankAccount(oneChar, DefaultStartingBalance);
         }
         #endregion Common pain points
 
@@ -188,7 +188,7 @@ namespace EffinghamLibraryTests
         {
             const string newName = "Test";
             const decimal newStartingBalance = 10000m;
-            IBankAccount secondAccount = new BankAccount(newName, newStartingBalance);
+            IBankAccount secondAccount = new TestBankAccount(newName, newStartingBalance);
 
             Parallel.Invoke(() =>
                             {
@@ -233,7 +233,7 @@ namespace EffinghamLibraryTests
             {
                 formatter.Serialize(stream, account);
                 stream.Position = 0; // Set this so the stream can be read from the beginning.
-                IBankAccount deserializedAccount = formatter.Deserialize(stream) as BankAccount; // Type-safe cast to avoid exceptions
+                IBankAccount deserializedAccount = formatter.Deserialize(stream) as TestBankAccount; // Type-safe cast to avoid exceptions
 
                 Assert.IsNotNull(deserializedAccount);
                 Assert.AreEqual(account.AccountNumber, deserializedAccount.AccountNumber);

@@ -5,7 +5,7 @@ namespace EffinghamLibrary
     /// <summary>
     /// Represents an interest-bearing savings account.
     /// </summary>
-    public class SavingsAccount : BankAccount, IInterestBearing
+    public sealed class SavingsAccount : BankAccount, IInterestBearing
     {
         #region Fields and Properties
         /// <summary>

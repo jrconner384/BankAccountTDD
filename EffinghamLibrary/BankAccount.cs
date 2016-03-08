@@ -7,7 +7,7 @@ namespace EffinghamLibrary
     /// Represents a general account, connecting a customer's name to an account balance.
     /// </summary>
     [Serializable]
-    public class BankAccount : IBankAccountMultipleCurrency, ISerializable
+    public abstract class BankAccount : IBankAccountMultipleCurrency, ISerializable
     {
         #region Fields and Properties
         #region Serialization Keys
@@ -158,7 +158,7 @@ namespace EffinghamLibrary
         /// <remarks>
         /// This is marked internal since there's no reason for external consumers to try to use this.
         /// </remarks>
-        internal BankAccount(SerializationInfo info, StreamingContext context)
+        protected internal BankAccount(SerializationInfo info, StreamingContext context)
             : this()
         {
             lock (instanceBouncer)

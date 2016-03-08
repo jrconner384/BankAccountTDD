@@ -7,7 +7,7 @@ namespace EffinghamLibrary
     /// Represents a checking account which allows overdrafting.
     /// </summary>
     [Serializable]
-    public class CheckingAccount : BankAccount
+    public sealed class CheckingAccount : BankAccount
     {
         #region Fields and Properties
         private static readonly decimal AccountMinimumBalance;
