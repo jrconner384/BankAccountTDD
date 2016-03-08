@@ -1,8 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace EffinghamLibrary
 {
-    public interface IVault
+    /// <summary>
+    /// Defines a means for CRUDing BankAccount derivations.
+    /// </summary>
+    /// <remarks>
+    /// This is meant to be implemented as a singleton.
+    /// </remarks>
+    public interface IVault : IDisposable
     {
         /// <summary>
         /// Retrieves an enumerable collection of IBankAccountMultipleCurrency intended to be read-only.
