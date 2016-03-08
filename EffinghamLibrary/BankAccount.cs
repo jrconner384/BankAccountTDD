@@ -22,7 +22,7 @@ namespace EffinghamLibrary
 
         protected decimal balance;
 
-        protected static readonly object classBouncer;
+        protected static readonly object ClassBouncer;
 
         /// <summary>
         /// Backing field for the account holder's name
@@ -95,7 +95,7 @@ namespace EffinghamLibrary
         #region Constructors
         static BankAccount()
         {
-            classBouncer = new object();
+            ClassBouncer = new object();
 
             // There's no data store. Doing this to demonstrate functionality and make it testable.
             // This should probably be extracted to a GetNextAccount() method
@@ -108,7 +108,7 @@ namespace EffinghamLibrary
 
             // If locking on both the class and the instance, we'll have to stick to the same nesting order
             // (i.e. classBouncer outside, instanceBouncer inside).
-            lock (classBouncer)
+            lock (ClassBouncer)
             {
                 lock (instanceBouncer)
                 {
@@ -144,7 +144,7 @@ namespace EffinghamLibrary
 
             // Need to do this in a separate set of nested locks since it locks on both the class and the instance.
             // The established order of the locks needs to be consistent.
-            lock (classBouncer)
+            lock (ClassBouncer)
             {
                 lock (instanceBouncer)
                 {
