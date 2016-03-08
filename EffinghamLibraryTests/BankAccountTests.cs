@@ -14,12 +14,21 @@ namespace EffinghamLibraryTests
 
         private IBankAccount account;
 
+        #region Housekeeping
         [TestInitialize]
         public void Setup()
         {
             account = new BankAccount(DefaultName, DefaultStartingBalance);
         }
+        #endregion Housekeeping
 
+        [TestMethod]
+        public void SerializationTest()
+        {
+            
+        }
+
+        #region Common successful cases
         [TestMethod]
         public void NewAccountsAreAssignedSequentialValuesTest()
         {
@@ -62,6 +71,32 @@ namespace EffinghamLibraryTests
         }
 
         [TestMethod]
+        public void TestSetupInitializesTestAccountTest()
+        {
+            Assert.IsNotNull(account, $"The BankAccount object, {account}, was not initialized by the [TestInitialize] method.");
+        }
+
+        [TestMethod]
+        public void TestSetupInstantiatesTestAccountAsBankAccountTypeTest()
+        {
+            Assert.IsTrue(account is BankAccount, $"The test account is not the expected type: {typeof(BankAccount)}");
+        }
+
+        [TestMethod]
+        public void TestSetupAssignsCorrectStartingBalanceToTestAccountTest()
+        {
+            Assert.AreEqual(DefaultStartingBalance, account.Balance, $"The test account should always start with {DefaultStartingBalance}");
+        }
+
+        [TestMethod]
+        public void TestSetupAssignsCorrectDefaultNameToTestAccountTest()
+        {
+            Assert.AreEqual(DefaultName, account.CustomerName, $"The test account should start with the customer name {DefaultName}");
+        }
+        #endregion Common successful cases
+
+        #region Common pain points
+        [TestMethod]
         [ExpectedException(typeof(ApplicationException), "This should have received an ApplicationException explaining that the string was too short.")]
         public void CannotAssignAnAccountNameLessThanTwoCharactersLongBizRuleTest()
         {
@@ -98,6 +133,31 @@ namespace EffinghamLibraryTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void ConstructorThrowsExceptionIfGivenNullStringForCustomerNameTest()
+        {
+            IBankAccount badInitialize = new BankAccount(null, DefaultStartingBalance);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ApplicationException))]
+        public void ConstructorThrowsExceptionIfGivenNegativeStartingBalanceTest()
+        {
+            const decimal negative = -1.0m;
+            IBankAccount badInitialize = new BankAccount(DefaultName, negative);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ApplicationException))]
+        public void ConstructorThrowsExceptionIfGivenOneCharacterStringTest()
+        {
+            const string oneChar = "a";
+            IBankAccount badInitialize = new BankAccount(oneChar, DefaultStartingBalance);
+        }
+        #endregion Common pain points
+
+        #region Business rule tests
+        [TestMethod]
         public void CanDepositFractionOfACentBizRuleTest()
         {
             const decimal smallPositiveValue = 0.00001m;
@@ -124,54 +184,9 @@ namespace EffinghamLibraryTests
 
             account.Withdraw(zero);
         }
+        #endregion Business rule tests
 
-        [TestMethod]
-        public void TestSetupInitializesTestAccountTest()
-        {
-            Assert.IsNotNull(account, $"The BankAccount object, {account}, was not initialized by the [TestInitialize] method.");
-        }
-
-        [TestMethod]
-        public void TestSetupInstantiatesTestAccountAsBankAccountTypeTest()
-        {
-            Assert.IsTrue(account is BankAccount, $"The test account is not the expected type: {typeof(BankAccount)}");
-        }
-
-        [TestMethod]
-        public void TestSetupAssignsCorrectStartingBalanceToTestAccountTest()
-        {
-            Assert.AreEqual(DefaultStartingBalance, account.Balance, $"The test account should always start with {DefaultStartingBalance}");
-        }
-
-        [TestMethod]
-        public void TestSetupAssignsCorrectDefaultNameToTestAccountTest()
-        {
-            Assert.AreEqual(DefaultName, account.CustomerName, $"The test account should start with the customer name {DefaultName}");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void ConstructorThrowsExceptionIfGivenNullStringForCustomerNameTest()
-        {
-            IBankAccount badInitialize = new BankAccount(null, DefaultStartingBalance);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ApplicationException))]
-        public void ConstructorThrowsExceptionIfGivenNegativeStartingBalanceTest()
-        {
-            const decimal negative = -1.0m;
-            IBankAccount badInitialize = new BankAccount(DefaultName, negative);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ApplicationException))]
-        public void ConstructorThrowsExceptionIfGivenOneCharacterStringTest()
-        {
-            const string oneChar = "a";
-            IBankAccount badInitialize = new BankAccount(oneChar, DefaultStartingBalance);
-        }
-
+        #region Multithreading sanity checks
         [TestMethod]
         public void ParallelDepositsAndWithdrawsDontCorruptBalanceTest()
         {
@@ -210,5 +225,6 @@ namespace EffinghamLibraryTests
 
             Assert.AreEqual(newStartingBalance, secondAccount.Balance);
         }
+        #endregion Multithreading sanity checks
     }
 }
