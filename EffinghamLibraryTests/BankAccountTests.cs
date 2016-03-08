@@ -225,7 +225,7 @@ namespace EffinghamLibraryTests
 
         #region Serialization Tests
         [TestMethod]
-        public void SerializationTest()
+        public void BankAccountCanBeSerializedAndDeserializedTest()
         {
             SoapFormatter formatter = new SoapFormatter();
 
