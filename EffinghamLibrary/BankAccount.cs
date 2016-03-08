@@ -31,6 +31,9 @@ namespace EffinghamLibrary
 
         protected decimal balance;
 
+        /// <summary>
+        /// Locks critical sections for static members.
+        /// </summary>
         protected static readonly object ClassBouncer;
 
         /// <summary>
@@ -40,10 +43,19 @@ namespace EffinghamLibrary
 
         private const CurrencyType DefaultCurrencyType = CurrencyType.Dollar;
 
+        /// <summary>
+        /// Locks critical sections for instance members.
+        /// </summary>
         protected readonly object instanceBouncer;
 
+        /// <summary>
+        /// Holds the value to assign to the next new account.
+        /// </summary>
         private static int nextAccountNumber;
 
+        /// <summary>
+        /// The unique number identifying a specific account.
+        /// </summary>
         public int AccountNumber
         {
             get
@@ -111,10 +123,14 @@ namespace EffinghamLibrary
             nextAccountNumber = 1;
         }
 
-        public BankAccount(string customerName, decimal startingBalance, CurrencyType currency = DefaultCurrencyType)
+        private BankAccount()
         {
             instanceBouncer = new object();
+        }
 
+        public BankAccount(string customerName, decimal startingBalance, CurrencyType currency = DefaultCurrencyType)
+            : this()
+        {
             // If locking on both the class and the instance, we'll have to stick to the same nesting order
             // (i.e. classBouncer outside, instanceBouncer inside).
             lock (ClassBouncer)
@@ -143,6 +159,7 @@ namespace EffinghamLibrary
         /// This is marked internal since there's no reason for external consumers to try to use this.
         /// </remarks>
         internal BankAccount(SerializationInfo info, StreamingContext context)
+            : this()
         {
             lock (instanceBouncer)
             {
