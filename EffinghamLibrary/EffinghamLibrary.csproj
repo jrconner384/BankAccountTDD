@@ -45,6 +45,7 @@
     <Compile Include="CurrencyType.cs" />
     <Compile Include="IBankAccount.cs" />
     <Compile Include="IInterestBearing.cs" />
+    <Compile Include="IVault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavingsAccount.cs" />
   </ItemGroup>
