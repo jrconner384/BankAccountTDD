@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Soap;
 using System.Threading.Tasks;
 using EffinghamLibrary;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,12 +23,6 @@ namespace EffinghamLibraryTests
             account = new BankAccount(DefaultName, DefaultStartingBalance);
         }
         #endregion Housekeeping
-
-        [TestMethod]
-        public void SerializationTest()
-        {
-            
-        }
 
         #region Common successful cases
         [TestMethod]
@@ -226,5 +222,25 @@ namespace EffinghamLibraryTests
             Assert.AreEqual(newStartingBalance, secondAccount.Balance);
         }
         #endregion Multithreading sanity checks
+
+        #region Serialization Tests
+        [TestMethod]
+        public void SerializationTest()
+        {
+            SoapFormatter formatter = new SoapFormatter();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, account);
+                stream.Position = 0; // Set this so the stream can be read from the beginning.
+                IBankAccount deserializedAccount = formatter.Deserialize(stream) as BankAccount; // Type-safe cast to avoid exceptions
+
+                Assert.IsNotNull(deserializedAccount);
+                Assert.AreEqual(account.AccountNumber, deserializedAccount.AccountNumber);
+                Assert.AreEqual(account.Balance, deserializedAccount.Balance);
+                Assert.AreEqual(account.CustomerName, deserializedAccount.CustomerName);
+            }
+        }
+        #endregion Serialization Tests
     }
 }
