@@ -11,10 +11,19 @@ namespace EffinghamLibrary
     {
         #region Fields and Properties
         #region Serialization Keys
+        /// <summary>
+        /// Describes the string value used to serialize and deserialize the AccountNumber property.
+        /// </summary>
         private const string AccountNumberKey = "AccountNumber";
 
+        /// <summary>
+        /// Describes the string value used to serialize and deserialize the Balance property.
+        /// </summary>
         private const string BalanceKey = "Balance";
 
+        /// <summary>
+        /// Describes the string value used to serialize and deserialize the CustomerName property.
+        /// </summary>
         private const string CustomerNameKey = "CustomerName";
         #endregion Serialization Keys
 
