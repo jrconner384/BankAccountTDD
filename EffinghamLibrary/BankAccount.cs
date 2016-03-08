@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace EffinghamLibrary
 {
@@ -22,9 +23,19 @@ namespace EffinghamLibrary
     /// <summary>
     /// Represents an account, connecting a customer's name to an account balance.
     /// </summary>
-    public class BankAccount : IBankAccountMultipleCurrency
+    [Serializable]
+    public class BankAccount : IBankAccountMultipleCurrency, ISerializable
     {
         #region Fields and Properties
+        #region Serialization Keys
+        private const string AccountNumberKey = "AccountNumber";
+
+        private const string BalanceKey = "Balance";
+
+        private const string CustomerNameKey = "CustomerName";
+        #endregion Serialization Keys
+
+        private readonly int accountNumber;
 
         protected decimal balance;
 
@@ -41,7 +52,16 @@ namespace EffinghamLibrary
 
         private static int nextAccountNumber;
 
-        public int AccountNumber { get; }
+        public int AccountNumber
+        {
+            get
+            {
+                lock (instanceBouncer)
+                {
+                    return accountNumber;
+                }
+            }
+        }
 
         /// <summary>
         /// Represents the monetary balance of the account.
@@ -93,18 +113,23 @@ namespace EffinghamLibrary
         static BankAccount()
         {
             classBouncer = new object();
-            nextAccountNumber = 1; // There's no data store. Doing this to demonstrate functionality and make it testable.
+
+            // There's no data store. Doing this to demonstrate functionality and make it testable.
+            // This should probably be extracted to a GetNextAccount() method
+            nextAccountNumber = 1;
         }
 
         public BankAccount(string customerName, decimal startingBalance, CurrencyType currency = DefaultCurrencyType)
         {
             instanceBouncer = new object();
 
+            // If locking on both the class and the instance, we'll have to stick to the same nesting order
+            // (i.e. classBouncer outside, instanceBouncer inside).
             lock (classBouncer)
             {
                 lock (instanceBouncer)
                 {
-                    AccountNumber = nextAccountNumber++;
+                    accountNumber = nextAccountNumber++;
                 }
             }
 
@@ -116,14 +141,54 @@ namespace EffinghamLibrary
             CustomerName = customerName;
             Deposit(startingBalance, currency);
         }
+
+        /// <summary>
+        /// Deserialize an account from serialized data.
+        /// </summary>
+        /// <param name="info">The serialized data corresponding to a BankAccount.</param>
+        /// <param name="context"></param>
+        /// <remarks>
+        /// This is marked internal since there's no reason for external consumers to try to use this.
+        /// </remarks>
+        internal BankAccount(SerializationInfo info, StreamingContext context)
+        {
+            lock (instanceBouncer)
+            {
+                accountNumber = info.GetInt32(AccountNumberKey);
+                balance = info.GetDecimal(BalanceKey);
+                customerName = info.GetString(CustomerNameKey);
+            }
+
+            // Need to do this in a separate set of nested locks since it locks on both the class and the instance.
+            // The established order of the locks needs to be consistent.
+            lock (classBouncer)
+            {
+                lock (instanceBouncer)
+                {
+                    if (nextAccountNumber <= accountNumber)
+                    {
+                        nextAccountNumber = accountNumber + 1;
+                    }
+                }
+            }
+        }
         #endregion Constructors
 
         #region Methods
+        /// <summary>
+        /// Deposits the specified amount as the default currency.
+        /// </summary>
+        /// <param name="amount">The amount to deposit.</param>
         public virtual void Deposit(decimal amount)
         {
             Deposit(amount, DefaultCurrencyType);
         }
 
+        /// <summary>
+        /// Deposits the specified amount as the specified currency.
+        /// </summary>
+        /// <param name="amount">The amount to deposit.</param>
+        /// <param name="currency">The currency to perform the deposit as.</param>
         public virtual void Deposit(decimal amount, CurrencyType currency)
         {
             if (amount <= 0)
@@ -133,12 +198,17 @@ namespace EffinghamLibrary
 
             lock (instanceBouncer)
             {
-                balance += ConvertCurrency(amount, currency); ;
+                balance += ConvertCurrency(amount, currency);
             }
         }
 
+        /// <summary>
+        /// Withdraws the specified amount as the default currency.
+        /// </summary>
+        /// <param name="amount">The amount to withdraw from the account.</param>
         public virtual void Withdraw(decimal amount)
         {
+            // TODO: Probably need to add an overload to withdraw a specified currency.
             if (amount <= 0)
             {
                 throw new ApplicationException($"The requested withdraw amount, {amount}, is a non-positive number.");
@@ -157,8 +227,27 @@ namespace EffinghamLibrary
             }
         }
         #endregion Methods
+        #region ISerializable
+        /// <summary>
+        /// Serializes the account for storage.
+        /// </summary>
+        /// <param name="info">The structure to serialize data into.</param>
+        /// <param name="context"></param>
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(AccountNumberKey, AccountNumber);
+            info.AddValue(BalanceKey, Balance);
+            info.AddValue(CustomerNameKey, CustomerName);
+        }
+        #endregion ISerializable
 
         #region Helpers
+        /// <summary>
+        /// Given an amount of money, this converts it from the default currency to the currency specified.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="toConvertTo"></param>
+        /// <returns></returns>
         private static decimal ConvertCurrency(decimal amount, CurrencyType toConvertTo)
         {
             switch (toConvertTo)
