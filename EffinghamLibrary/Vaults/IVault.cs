@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using EffinghamLibrary.Accounts;
 
-namespace EffinghamLibrary
+namespace EffinghamLibrary.Vaults
 {
     /// <summary>
     /// Defines a means for CRUDing BankAccount derivations.
