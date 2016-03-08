@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffinghamLibrary", "EffinghamLibrary\EffinghamLibrary.csproj", "{A5CAFFF0-E7D3-4DD4-9103-8D36B493FAA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TellerUI", "TellerUI\TellerUI.csproj", "{6CE89219-9C44-4BD0-8B9C-D705D8DF6B30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffinghamLibraryTests", "EffinghamLibraryTests\EffinghamLibraryTests.csproj", "{88A1B10B-A579-4E92-9E6C-08C30019038F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5CAFFF0-E7D3-4DD4-9103-8D36B493FAA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5CAFFF0-E7D3-4DD4-9103-8D36B493FAA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5CAFFF0-E7D3-4DD4-9103-8D36B493FAA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5CAFFF0-E7D3-4DD4-9103-8D36B493FAA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CE89219-9C44-4BD0-8B9C-D705D8DF6B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CE89219-9C44-4BD0-8B9C-D705D8DF6B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CE89219-9C44-4BD0-8B9C-D705D8DF6B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CE89219-9C44-4BD0-8B9C-D705D8DF6B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
