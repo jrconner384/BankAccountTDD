@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Soap;
 using System.Threading.Tasks;
-using EffinghamLibrary;
+using EffinghamLibrary.Accounts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EffinghamLibraryTests

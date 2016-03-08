@@ -40,17 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BankAccount.cs" />
-    <Compile Include="CheckingAccount.cs" />
+    <Compile Include="Accounts\BankAccount.cs" />
+    <Compile Include="Accounts\CheckingAccount.cs" />
     <Compile Include="CurrencyType.cs" />
-    <Compile Include="IBankAccount.cs" />
-    <Compile Include="IInterestBearing.cs" />
-    <Compile Include="IVault.cs" />
+    <Compile Include="Accounts\IBankAccount.cs" />
+    <Compile Include="Accounts\IInterestBearing.cs" />
+    <Compile Include="Vaults\IVault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SavingsAccount.cs" />
+    <Compile Include="Accounts\SavingsAccount.cs" />
+    <Compile Include="Vaults\SOAPVault.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BusinessLayerDiagram.cd" />
+    <None Include="Documentation\BusinessLayerDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using EffinghamLibrary;
+using EffinghamLibrary.Accounts;
 
 namespace EffinghamLibraryTests
 {

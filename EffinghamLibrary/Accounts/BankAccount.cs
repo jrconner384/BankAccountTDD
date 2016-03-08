@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace EffinghamLibrary
+namespace EffinghamLibrary.Accounts
 {
     /// <summary>
     /// Represents a general account, connecting a customer's name to an account balance.

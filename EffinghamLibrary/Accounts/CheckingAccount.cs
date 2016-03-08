@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace EffinghamLibrary
+namespace EffinghamLibrary.Accounts
 {
     /// <summary>
     /// Represents a checking account which allows overdrafting.

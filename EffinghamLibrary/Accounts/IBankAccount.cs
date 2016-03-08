@@ -1,4 +1,4 @@
-﻿namespace EffinghamLibrary
+﻿namespace EffinghamLibrary.Accounts
 {
     // Default access modifier is internal
     public interface IBankAccount

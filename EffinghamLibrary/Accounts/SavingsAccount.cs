@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EffinghamLibrary
+namespace EffinghamLibrary.Accounts
 {
     /// <summary>
     /// Represents an interest-bearing savings account.

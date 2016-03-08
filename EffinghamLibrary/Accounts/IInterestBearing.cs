@@ -1,4 +1,4 @@
-﻿namespace EffinghamLibrary
+﻿namespace EffinghamLibrary.Accounts
 {
     public interface IInterestBearing : IBankAccountMultipleCurrency
     {

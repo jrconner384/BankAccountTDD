@@ -1,4 +1,5 @@
 ﻿using EffinghamLibrary;
+using EffinghamLibrary.Accounts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EffinghamLibraryTests
