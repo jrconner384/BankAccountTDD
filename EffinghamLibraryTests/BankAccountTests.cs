@@ -21,6 +21,14 @@ namespace EffinghamLibraryTests
         }
 
         [TestMethod]
+        public void NewAccountsAreAssignedSequentialValuesTest()
+        {
+            IBankAccount secondAccount = new BankAccount(DefaultName, DefaultStartingBalance);
+
+            Assert.AreEqual(account.AccountNumber + 1, secondAccount.AccountNumber);
+        }
+
+        [TestMethod]
         public void AccountCustomerNameCorrectlyUpdatesValueAfterAssignmentTest()
         {
             const string testName = "Jeff";

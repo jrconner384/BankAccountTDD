@@ -25,16 +25,23 @@ namespace EffinghamLibrary
     public class BankAccount : IBankAccountMultipleCurrency
     {
         #region Fields and Properties
+
         protected decimal balance;
+
+        protected static readonly object classBouncer;
 
         /// <summary>
         /// Backing field for the account holder's name
         /// </summary>
         private string customerName;
 
-        protected readonly object bouncer;
-
         private const CurrencyType DefaultCurrencyType = CurrencyType.Dollar;
+
+        protected readonly object instanceBouncer;
+
+        private static int nextAccountNumber;
+
+        public int AccountNumber { get; }
 
         /// <summary>
         /// Represents the monetary balance of the account.
@@ -43,7 +50,7 @@ namespace EffinghamLibrary
         {
             get
             {
-                lock (bouncer)
+                lock (instanceBouncer)
                 {
                     return balance;
                 }
@@ -57,7 +64,7 @@ namespace EffinghamLibrary
         {
             get
             {
-                lock (bouncer)
+                lock (instanceBouncer)
                 {
                     return customerName;
                 }
@@ -69,7 +76,7 @@ namespace EffinghamLibrary
 
                 if (cleanName.Length > 1)
                 {
-                    lock (bouncer)
+                    lock (instanceBouncer)
                     {
                         customerName = cleanName;
                     }
@@ -83,11 +90,25 @@ namespace EffinghamLibrary
         #endregion Fields and Properties
 
         #region Constructors
+        static BankAccount()
+        {
+            classBouncer = new object();
+            nextAccountNumber = 1; // There's no data store. Doing this to demonstrate functionality and make it testable.
+        }
+
         public BankAccount(string customerName, decimal startingBalance, CurrencyType currency = DefaultCurrencyType)
         {
-            bouncer = new object();
+            instanceBouncer = new object();
 
-            lock (bouncer)
+            lock (classBouncer)
+            {
+                lock (instanceBouncer)
+                {
+                    AccountNumber = nextAccountNumber++;
+                }
+            }
+
+            lock (instanceBouncer)
             {
                 balance = 0.0m;
             }
@@ -110,7 +131,7 @@ namespace EffinghamLibrary
                 throw new ApplicationException($"{amount} is less than or equal to zero. Valid deposits are greater than zero.");
             }
 
-            lock (bouncer)
+            lock (instanceBouncer)
             {
                 balance += ConvertCurrency(amount, currency); ;
             }
@@ -130,7 +151,7 @@ namespace EffinghamLibrary
                 throw new ApplicationException($"The account has insufficient funds. Cannot withdraw {amount} from {Balance}.");
             }
 
-            lock (bouncer) // balance field doesn't have locking. Need to lock.
+            lock (instanceBouncer) // balance field doesn't have locking. Need to lock.
             {
                 balance -= amount;
             }

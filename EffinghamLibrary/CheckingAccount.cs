@@ -24,7 +24,7 @@ namespace EffinghamLibrary
                 throw new ApplicationException("Insufficient funds to perform this overdraw action.");
             }
 
-            lock (bouncer)
+            lock (instanceBouncer)
             {
                 balance -= amount;
             }

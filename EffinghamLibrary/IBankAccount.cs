@@ -3,6 +3,8 @@
     // Default access modifier is internal
     public interface IBankAccount
     {
+        int AccountNumber { get; }
+
         string CustomerName { get; set; }
 
         decimal Balance { get; }

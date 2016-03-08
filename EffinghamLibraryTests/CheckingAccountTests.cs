@@ -17,7 +17,7 @@ namespace EffinghamLibraryTests
         }
 
         [TestMethod]
-        public void OverdraftIsAllowedTest()
+        public void OverdraftCorrectlyUpdatesAccountBalanceTest()
         {
             const decimal amountToOverdrawBy = 10.0m;
             const decimal expectedAmount = 0 - amountToOverdrawBy;

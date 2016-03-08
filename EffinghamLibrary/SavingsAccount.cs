@@ -26,7 +26,7 @@
         #region Methods
         public void AddMonthlyInterest()
         {
-            lock (bouncer)
+            lock (instanceBouncer)
             {
                 balance *= 1 + MonthlyInterestRate;
             }
