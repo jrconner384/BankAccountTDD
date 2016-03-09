@@ -17,11 +17,11 @@ namespace EffinghamLibrary.Vaults
         /// </summary>
         private const string DataFile = @"Accounts.dat";
 
-        private IList<IBankAccountMultipleCurrency> accounts;
+        private readonly List<IBankAccountMultipleCurrency> accounts;
 
         private bool isFlushed;
 
-        private ReaderWriterLockSlim instanceLock;
+        private readonly ReaderWriterLockSlim activeMemoryLock;
         #endregion Fields and Properties
 
         #region Constructors
@@ -34,7 +34,7 @@ namespace EffinghamLibrary.Vaults
         {
             accounts = new List<IBankAccountMultipleCurrency>();
             isFlushed = false;
-            instanceLock = new ReaderWriterLockSlim();
+            activeMemoryLock = new ReaderWriterLockSlim();
         }
         #endregion Constructors
 
@@ -45,7 +45,15 @@ namespace EffinghamLibrary.Vaults
         /// <returns>The enumerable collection of accounts stored in the vault.</returns>
         public IEnumerable<IBankAccountMultipleCurrency> GetAccounts()
         {
-            return accounts.AsEnumerable();
+            activeMemoryLock.EnterReadLock();
+            try
+            {
+                return accounts.AsEnumerable();
+            }
+            finally
+            {
+                ExitActiveMemoryReadLock();
+            }
         }
 
         /// <summary>
@@ -60,7 +68,15 @@ namespace EffinghamLibrary.Vaults
         /// </exception>
         public IBankAccountMultipleCurrency GetAccount(int accountNumber)
         {
-            return accounts.Single(account => account.AccountNumber == accountNumber);
+            activeMemoryLock.EnterReadLock();
+            try
+            {
+                return accounts.Single(account => account.AccountNumber == accountNumber);
+            }
+            finally
+            {
+                ExitActiveMemoryReadLock();
+            }
         }
 
         /// <summary>
@@ -74,8 +90,16 @@ namespace EffinghamLibrary.Vaults
         /// </param>
         public void AddAccount(IBankAccountMultipleCurrency account, bool delayWrite = false)
         {
-            accounts.Add(account);
-            isFlushed = false;
+            activeMemoryLock.EnterWriteLock();
+            try
+            {
+                accounts.Add(account);
+                isFlushed = false;
+            }
+            finally
+            {
+                ExitActiveMemoryWriteLock();
+            }
 
             if (!delayWrite)
             {
@@ -92,9 +116,35 @@ namespace EffinghamLibrary.Vaults
         /// If false, the account will immediately be persisted in the SOAP data file; otherwise,
         /// consumers need to explicitly flush data to disk at a later time.
         /// </param>
+        /// <exception cref="ApplicationException">No account with the specified account number could be found.</exception>
         public void UpdateAccount(IBankAccountMultipleCurrency account, bool delayWrite = false)
         {
-            throw new NotImplementedException();
+            activeMemoryLock.EnterUpgradeableReadLock();
+            int index = accounts.FindIndex(accountInMemory => accountInMemory.AccountNumber == account.AccountNumber);
+
+            try
+            {
+                if (index >= 0)
+                {
+                    activeMemoryLock.EnterWriteLock();
+                    accounts[index] = account;
+                    isFlushed = false;
+                }
+                else
+                {
+                    throw new ApplicationException($"Can't update the account. Account {account.AccountNumber} not found.");
+                }
+            }
+            finally
+            {
+                ExitActiveMemoryWriteLock();
+                ExitActiveMemoryUpgradeableReadLock();
+            }
+
+            if (!delayWrite)
+            {
+                // TODO: write accounts.
+            }
         }
 
         /// <summary>
@@ -106,9 +156,36 @@ namespace EffinghamLibrary.Vaults
         /// If false, the change will immediately be persisted in the SOAP data file; otherwise,
         /// consumers need to explicitly flush data to disk at a later time.
         /// </param>
+        /// <exception cref="ApplicationException">No account with the specified account number could be found.</exception>
         public void DeleteAccount(IBankAccountMultipleCurrency account, bool delayWrite = false)
         {
-            throw new NotImplementedException();
+            activeMemoryLock.EnterUpgradeableReadLock();
+
+            try
+            {
+                int index = accounts.FindIndex(accountInMemory => accountInMemory.AccountNumber == account.AccountNumber);
+
+                if (index >= 0)
+                {
+                    activeMemoryLock.EnterWriteLock();
+                    accounts.RemoveAt(index);
+                    isFlushed = false;
+                }
+                else
+                {
+                    throw new ApplicationException($"Can't delete the account. Account {account.AccountNumber} not found.");
+                }
+            }
+            finally
+            {
+                ExitActiveMemoryWriteLock();
+                ExitActiveMemoryUpgradeableReadLock();
+            }
+
+            if (!delayWrite)
+            {
+                // TODO: write accounts.
+            }
         }
 
         /// <summary>
@@ -117,7 +194,7 @@ namespace EffinghamLibrary.Vaults
         /// </summary>
         public void FlushAccounts()
         {
-            throw new NotImplementedException();
+            // TODO: write accounts.
         }
         #endregion IVault Support
 
@@ -160,7 +237,7 @@ namespace EffinghamLibrary.Vaults
             {
                 if (disposing)
                 {
-                    
+
                 }
 
                 disposedValue = true;
@@ -185,5 +262,40 @@ namespace EffinghamLibrary.Vaults
             GC.SuppressFinalize(this);
         }
         #endregion IDisposable Support
+
+        #region Helpers
+        /// <summary>
+        /// If a read lock is held for the in-memory read/write lock, it will be released.
+        /// </summary>
+        private void ExitActiveMemoryReadLock()
+        {
+            if (activeMemoryLock.IsReadLockHeld)
+            {
+                activeMemoryLock.ExitReadLock();
+            }
+        }
+
+        /// <summary>
+        /// If a write lock is held for the in-memory read/write lock, it will be released.
+        /// </summary>
+        private void ExitActiveMemoryWriteLock()
+        {
+            if (activeMemoryLock.IsWriteLockHeld)
+            {
+                activeMemoryLock.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// If an upgradeable read lock is held for the in-memory read/write lock, it will be released.
+        /// </summary>
+        private void ExitActiveMemoryUpgradeableReadLock()
+        {
+            if (activeMemoryLock.IsUpgradeableReadLockHeld)
+            {
+                activeMemoryLock.ExitUpgradeableReadLock();
+            }
+        }
+        #endregion Helpers
     }
 }

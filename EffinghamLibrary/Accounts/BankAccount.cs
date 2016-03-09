@@ -236,6 +236,7 @@ namespace EffinghamLibrary.Accounts
             }
         }
         #endregion Methods
+
         #region ISerializable
         /// <summary>
         /// Serializes the account for storage.

@@ -80,8 +80,7 @@
             // 
             // btnNewAccount
             // 
-            this.btnNewAccount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNewAccount.Location = new System.Drawing.Point(208, 212);
+            this.btnNewAccount.Location = new System.Drawing.Point(208, 190);
             this.btnNewAccount.Margin = new System.Windows.Forms.Padding(4);
             this.btnNewAccount.Name = "btnNewAccount";
             this.btnNewAccount.Size = new System.Drawing.Size(100, 28);
@@ -94,7 +93,7 @@
             // 
             this.lblSummary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblSummary.AutoSize = true;
-            this.lblSummary.Location = new System.Drawing.Point(13, 218);
+            this.lblSummary.Location = new System.Drawing.Point(13, 402);
             this.lblSummary.Name = "lblSummary";
             this.lblSummary.Size = new System.Drawing.Size(81, 17);
             this.lblSummary.TabIndex = 5;
@@ -153,7 +152,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(321, 251);
+            this.ClientSize = new System.Drawing.Size(600, 435);
             this.Controls.Add(this.radSavings);
             this.Controls.Add(this.lblAccountType);
             this.Controls.Add(this.radChecking);
