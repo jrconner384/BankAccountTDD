@@ -7,7 +7,11 @@ namespace EffinghamLibrary.Accounts
     /// Represents a general account, connecting a customer's name to an account balance.
     /// </summary>
     [Serializable]
-    public abstract class BankAccount : IBankAccountMultipleCurrency, ISerializable
+    public abstract class BankAccount :
+        IBankAccountMultipleCurrency,
+        ISerializable,
+        IComparable<IBankAccountMultipleCurrency>,
+        IComparable
     {
         #region Fields and Properties
         #region Serialization Keys
@@ -285,7 +289,30 @@ namespace EffinghamLibrary.Accounts
         {
             return $"Account {AccountNumber}: \t{CustomerName}\t balance: {Balance:c}";
         }
-
         #endregion Object Overrides
+
+        #region IComparable
+        public int CompareTo(IBankAccountMultipleCurrency other)
+        {
+            int result = CustomerName.CompareTo(other.CustomerName);
+
+            if (result == 0)
+            {
+                result = -1 * Balance.CompareTo(other.Balance); // Invert balance sort to get descending sort order
+
+                if (result == 0)
+                {
+                    result = GetType().ToString().CompareTo(other.GetType().ToString());
+                }
+            }
+
+            return result;
+        }
+
+        public int CompareTo(object obj)
+        {
+            return CompareTo((IBankAccountMultipleCurrency)obj);
+        }
+        #endregion IComparable
     }
 }

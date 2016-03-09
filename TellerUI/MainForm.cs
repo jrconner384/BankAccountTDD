@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using EffinghamLibrary;
@@ -125,7 +126,10 @@ namespace TellerUI
         private void RefreshAccountsList()
         {
             lstAccounts.Items.Clear();
-            foreach (IBankAccountMultipleCurrency account in vault.GetAccounts())
+            List<IBankAccountMultipleCurrency> sortedAccounts = vault.GetAccounts().ToList();
+            sortedAccounts.Sort();
+
+            foreach (IBankAccountMultipleCurrency account in sortedAccounts)
             {
                 lstAccounts.Items.Add(account);
             }
