@@ -48,7 +48,7 @@
     <Compile Include="Vaults\IVault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Accounts\SavingsAccount.cs" />
-    <Compile Include="Vaults\SOAPVault.cs" />
+    <Compile Include="Vaults\SoapVault.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\BusinessLayerDiagram.cd" />
