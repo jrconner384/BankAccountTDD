@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using EffinghamLibrary.Accounts;
 
 namespace EffinghamLibrary.Vaults
@@ -9,6 +11,19 @@ namespace EffinghamLibrary.Vaults
     /// </summary>
     public class SoapVault : IVault
     {
+        #region Fields and Properties
+        /// <summary>
+        /// Defines the name but not the fully qualified location of the data file on disk.
+        /// </summary>
+        private const string DataFile = @"Accounts.dat";
+
+        private IList<IBankAccountMultipleCurrency> accounts;
+
+        private bool isFlushed;
+
+        private ReaderWriterLockSlim instanceLock;
+        #endregion Fields and Properties
+
         #region Constructors
         static SoapVault()
         {
@@ -17,36 +32,89 @@ namespace EffinghamLibrary.Vaults
 
         private SoapVault()
         {
-            
+            accounts = new List<IBankAccountMultipleCurrency>();
+            isFlushed = false;
+            instanceLock = new ReaderWriterLockSlim();
         }
         #endregion Constructors
 
         #region IVault Support
+        /// <summary>
+        /// Retrieves the collection of accounts stored by the vault.
+        /// </summary>
+        /// <returns>The enumerable collection of accounts stored in the vault.</returns>
         public IEnumerable<IBankAccountMultipleCurrency> GetAccounts()
         {
-            throw new NotImplementedException();
+            return accounts.AsEnumerable();
         }
 
+        /// <summary>
+        /// Retrieves the account stored in the vault with the provided accountNumber. If no
+        /// such account exists or multiple accounts with that account number exists, an
+        /// <see cref="InvalidOperationException"/> will be thrown.
+        /// </summary>
+        /// <param name="accountNumber">The account number of the account in this vault to retrieve</param>
+        /// <returns>The account stored in the vault with the specified account number.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// If there is not exactly one account identified by the specified account number.
+        /// </exception>
         public IBankAccountMultipleCurrency GetAccount(int accountNumber)
         {
-            throw new NotImplementedException();
+            return accounts.Single(account => account.AccountNumber == accountNumber);
         }
 
+        /// <summary>
+        /// Stores the provided account in active memory and optionally delays persisting it
+        /// in SOAP storage until explicitly flushed.
+        /// </summary>
+        /// <param name="account">The account to store.</param>
+        /// <param name="delayWrite">
+        /// If false, the account will immediately be persisted in the SOAP data file; otherwise,
+        /// consumers need to explicitly flush data to disk at a later time.
+        /// </param>
         public void AddAccount(IBankAccountMultipleCurrency account, bool delayWrite = false)
         {
-            throw new NotImplementedException();
+            accounts.Add(account);
+            isFlushed = false;
+
+            if (!delayWrite)
+            {
+                // TODO: Write accounts to disk
+            }
         }
 
+        /// <summary>
+        /// Updates the provided account in active memory and optionally delays persisting it
+        /// in SOAP storage until explicitly flushed.
+        /// </summary>
+        /// <param name="account">The account to update.</param>
+        /// <param name="delayWrite">
+        /// If false, the account will immediately be persisted in the SOAP data file; otherwise,
+        /// consumers need to explicitly flush data to disk at a later time.
+        /// </param>
         public void UpdateAccount(IBankAccountMultipleCurrency account, bool delayWrite = false)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Deletes the provided account from active memory and optionally delays persisting the
+        /// change in SOAP storage until explicitly flushed.
+        /// </summary>
+        /// <param name="account">The account to remove from the vault.</param>
+        /// <param name="delayWrite">
+        /// If false, the change will immediately be persisted in the SOAP data file; otherwise,
+        /// consumers need to explicitly flush data to disk at a later time.
+        /// </param>
         public void DeleteAccount(IBankAccountMultipleCurrency account, bool delayWrite = false)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Persists any create, update, or delete operations to the SOAP data file if the write
+        /// operations were explicitly delayed.
+        /// </summary>
         public void FlushAccounts()
         {
             throw new NotImplementedException();

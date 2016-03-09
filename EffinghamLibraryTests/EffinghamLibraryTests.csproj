@@ -60,6 +60,7 @@
     <Compile Include="SavingsAccountTests.cs" />
     <Compile Include="CheckingAccountTests.cs" />
     <Compile Include="TestBankAccount.cs" />
+    <Compile Include="SoapVaultTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EffinghamLibrary\EffinghamLibrary.csproj">
