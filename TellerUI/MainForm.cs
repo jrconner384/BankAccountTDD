@@ -89,6 +89,7 @@ namespace TellerUI
         private void SummarizeAccounts()
         {
             lblSummary.Text = $"{GetSumOfAllBalances():c} in {GetNumberOfCheckingAccounts()} Checking and {GetNumberOfSavingsAccounts()} Savings Accounts";
+            RefreshAccountsList();
         }
 
         /// <summary>
@@ -118,6 +119,17 @@ namespace TellerUI
             return vault.GetAccounts().Sum(account => account.Balance);
         }
 
+        /// <summary>
+        /// Syncs the list of accounts with the in-memory collection in the vault.
+        /// </summary>
+        private void RefreshAccountsList()
+        {
+            lstAccounts.Items.Clear();
+            foreach (IBankAccountMultipleCurrency account in vault.GetAccounts())
+            {
+                lstAccounts.Items.Add(account);
+            }
+        }
         #endregion Helpers
     }
 }

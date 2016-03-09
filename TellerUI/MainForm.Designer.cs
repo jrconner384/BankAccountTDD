@@ -40,12 +40,13 @@
             this.radChecking = new System.Windows.Forms.RadioButton();
             this.lblAccountType = new System.Windows.Forms.Label();
             this.radSavings = new System.Windows.Forms.RadioButton();
+            this.lstAccounts = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // lblCustomerName
             // 
             this.lblCustomerName.AutoSize = true;
-            this.lblCustomerName.Location = new System.Drawing.Point(13, 19);
+            this.lblCustomerName.Location = new System.Drawing.Point(13, 16);
             this.lblCustomerName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCustomerName.Name = "lblCustomerName";
             this.lblCustomerName.Size = new System.Drawing.Size(113, 17);
@@ -54,7 +55,7 @@
             // 
             // txtCustomerName
             // 
-            this.txtCustomerName.Location = new System.Drawing.Point(137, 16);
+            this.txtCustomerName.Location = new System.Drawing.Point(137, 13);
             this.txtCustomerName.Margin = new System.Windows.Forms.Padding(4);
             this.txtCustomerName.Name = "txtCustomerName";
             this.txtCustomerName.Size = new System.Drawing.Size(171, 23);
@@ -63,28 +64,28 @@
             // lblStartingAmount
             // 
             this.lblStartingAmount.AutoSize = true;
-            this.lblStartingAmount.Location = new System.Drawing.Point(13, 61);
+            this.lblStartingAmount.Location = new System.Drawing.Point(13, 55);
             this.lblStartingAmount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStartingAmount.Name = "lblStartingAmount";
             this.lblStartingAmount.Size = new System.Drawing.Size(113, 17);
-            this.lblStartingAmount.TabIndex = 2;
+            this.lblStartingAmount.TabIndex = 0;
             this.lblStartingAmount.Text = "Starting Amount:";
             // 
             // txtStartingAmount
             // 
-            this.txtStartingAmount.Location = new System.Drawing.Point(137, 58);
+            this.txtStartingAmount.Location = new System.Drawing.Point(137, 52);
             this.txtStartingAmount.Margin = new System.Windows.Forms.Padding(4);
             this.txtStartingAmount.Name = "txtStartingAmount";
             this.txtStartingAmount.Size = new System.Drawing.Size(171, 23);
-            this.txtStartingAmount.TabIndex = 3;
+            this.txtStartingAmount.TabIndex = 2;
             // 
             // btnNewAccount
             // 
-            this.btnNewAccount.Location = new System.Drawing.Point(208, 190);
+            this.btnNewAccount.Location = new System.Drawing.Point(208, 197);
             this.btnNewAccount.Margin = new System.Windows.Forms.Padding(4);
             this.btnNewAccount.Name = "btnNewAccount";
             this.btnNewAccount.Size = new System.Drawing.Size(100, 28);
-            this.btnNewAccount.TabIndex = 4;
+            this.btnNewAccount.TabIndex = 6;
             this.btnNewAccount.Text = "New Account";
             this.btnNewAccount.UseVisualStyleBackColor = true;
             this.btnNewAccount.Click += new System.EventHandler(this.btnNewAccount_Click);
@@ -93,66 +94,80 @@
             // 
             this.lblSummary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblSummary.AutoSize = true;
-            this.lblSummary.Location = new System.Drawing.Point(13, 402);
+            this.lblSummary.Location = new System.Drawing.Point(13, 250);
             this.lblSummary.Name = "lblSummary";
             this.lblSummary.Size = new System.Drawing.Size(81, 17);
-            this.lblSummary.TabIndex = 5;
+            this.lblSummary.TabIndex = 0;
             this.lblSummary.Text = "lblSummary";
             // 
             // lblCurrencyType
             // 
             this.lblCurrencyType.AutoSize = true;
-            this.lblCurrencyType.Location = new System.Drawing.Point(13, 100);
+            this.lblCurrencyType.Location = new System.Drawing.Point(13, 96);
             this.lblCurrencyType.Name = "lblCurrencyType";
             this.lblCurrencyType.Size = new System.Drawing.Size(105, 17);
-            this.lblCurrencyType.TabIndex = 6;
+            this.lblCurrencyType.TabIndex = 0;
             this.lblCurrencyType.Text = "Currency Type:";
             // 
             // cmbCurrencyType
             // 
             this.cmbCurrencyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCurrencyType.FormattingEnabled = true;
-            this.cmbCurrencyType.Location = new System.Drawing.Point(137, 97);
+            this.cmbCurrencyType.Location = new System.Drawing.Point(137, 93);
             this.cmbCurrencyType.Name = "cmbCurrencyType";
             this.cmbCurrencyType.Size = new System.Drawing.Size(171, 24);
-            this.cmbCurrencyType.TabIndex = 7;
+            this.cmbCurrencyType.TabIndex = 3;
             // 
             // radChecking
             // 
             this.radChecking.AutoSize = true;
-            this.radChecking.Location = new System.Drawing.Point(137, 135);
+            this.radChecking.Location = new System.Drawing.Point(137, 162);
             this.radChecking.Name = "radChecking";
             this.radChecking.Size = new System.Drawing.Size(84, 21);
-            this.radChecking.TabIndex = 8;
+            this.radChecking.TabIndex = 5;
             this.radChecking.Text = "Checking";
             this.radChecking.UseVisualStyleBackColor = true;
             // 
             // lblAccountType
             // 
             this.lblAccountType.AutoSize = true;
-            this.lblAccountType.Location = new System.Drawing.Point(16, 137);
+            this.lblAccountType.Location = new System.Drawing.Point(13, 135);
             this.lblAccountType.Name = "lblAccountType";
             this.lblAccountType.Size = new System.Drawing.Size(99, 17);
-            this.lblAccountType.TabIndex = 9;
+            this.lblAccountType.TabIndex = 0;
             this.lblAccountType.Text = "Account Type:";
             // 
             // radSavings
             // 
             this.radSavings.AutoSize = true;
             this.radSavings.Checked = true;
-            this.radSavings.Location = new System.Drawing.Point(137, 163);
+            this.radSavings.Location = new System.Drawing.Point(137, 135);
             this.radSavings.Name = "radSavings";
             this.radSavings.Size = new System.Drawing.Size(76, 21);
-            this.radSavings.TabIndex = 10;
+            this.radSavings.TabIndex = 4;
             this.radSavings.TabStop = true;
             this.radSavings.Text = "Savings";
             this.radSavings.UseVisualStyleBackColor = true;
+            // 
+            // lstAccounts
+            // 
+            this.lstAccounts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstAccounts.FormattingEnabled = true;
+            this.lstAccounts.ItemHeight = 16;
+            this.lstAccounts.Location = new System.Drawing.Point(331, 13);
+            this.lstAccounts.Name = "lstAccounts";
+            this.lstAccounts.Size = new System.Drawing.Size(440, 212);
+            this.lstAccounts.TabIndex = 0;
+            this.lstAccounts.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(600, 435);
+            this.ClientSize = new System.Drawing.Size(783, 276);
+            this.Controls.Add(this.lstAccounts);
             this.Controls.Add(this.radSavings);
             this.Controls.Add(this.lblAccountType);
             this.Controls.Add(this.radChecking);
@@ -189,6 +204,7 @@
         private System.Windows.Forms.RadioButton radChecking;
         private System.Windows.Forms.Label lblAccountType;
         private System.Windows.Forms.RadioButton radSavings;
+        private System.Windows.Forms.ListBox lstAccounts;
     }
 }
 

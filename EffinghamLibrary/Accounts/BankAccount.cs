@@ -273,5 +273,19 @@ namespace EffinghamLibrary.Accounts
             }
         }
         #endregion Helpers
+
+        #region Object Overrides
+        /// <summary>
+        /// Returns a string that represents the account.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the account.
+        /// </returns>
+        public override string ToString()
+        {
+            return $"Account {AccountNumber}: \t{CustomerName}\t balance: {Balance:c}";
+        }
+
+        #endregion Object Overrides
     }
 }

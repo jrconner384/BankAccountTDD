@@ -67,5 +67,19 @@ namespace EffinghamLibrary.Accounts
             }
         }
         #endregion Methods
+
+        #region Overrides
+        /// <summary>
+        /// Returns a string that represents the account.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the account.
+        /// </returns>
+        public override string ToString()
+        {
+            return $"Savings {base.ToString()}";
+        }
+
+        #endregion Overrides
     }
 }
