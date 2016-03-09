@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Soap;
 using System.Threading;
 using EffinghamLibrary.Accounts;
 
@@ -17,11 +20,13 @@ namespace EffinghamLibrary.Vaults
         /// </summary>
         private const string DataFile = @"Accounts.dat";
 
-        private readonly List<IBankAccountMultipleCurrency> accounts;
+        private List<IBankAccountMultipleCurrency> accounts;
 
         private bool isFlushed;
 
         private readonly ReaderWriterLockSlim activeMemoryLock;
+
+        private readonly object persistenceBouncer;
         #endregion Fields and Properties
 
         #region Constructors
@@ -32,9 +37,12 @@ namespace EffinghamLibrary.Vaults
 
         private SoapVault()
         {
-            accounts = new List<IBankAccountMultipleCurrency>();
-            isFlushed = false;
+            // Need to guarantee that locking mechanisms are the first thing instantiated.
+            persistenceBouncer = new object();
             activeMemoryLock = new ReaderWriterLockSlim();
+
+            isFlushed = false;
+            ReadAccounts(); // Initializes in-memory list of accounts, sets flags, etc.
         }
         #endregion Constructors
 
@@ -52,7 +60,7 @@ namespace EffinghamLibrary.Vaults
             }
             finally
             {
-                ExitActiveMemoryReadLock();
+                ExitReadLock();
             }
         }
 
@@ -75,7 +83,7 @@ namespace EffinghamLibrary.Vaults
             }
             finally
             {
-                ExitActiveMemoryReadLock();
+                ExitReadLock();
             }
         }
 
@@ -98,12 +106,12 @@ namespace EffinghamLibrary.Vaults
             }
             finally
             {
-                ExitActiveMemoryWriteLock();
+                ExitWriteLock();
             }
 
             if (!delayWrite)
             {
-                // TODO: Write accounts to disk
+                WriteAccounts();
             }
         }
 
@@ -137,13 +145,13 @@ namespace EffinghamLibrary.Vaults
             }
             finally
             {
-                ExitActiveMemoryWriteLock();
-                ExitActiveMemoryUpgradeableReadLock();
+                ExitWriteLock();
+                ExitUpgradeableReadLock();
             }
 
             if (!delayWrite)
             {
-                // TODO: write accounts.
+                WriteAccounts();
             }
         }
 
@@ -178,13 +186,13 @@ namespace EffinghamLibrary.Vaults
             }
             finally
             {
-                ExitActiveMemoryWriteLock();
-                ExitActiveMemoryUpgradeableReadLock();
+                ExitWriteLock();
+                ExitUpgradeableReadLock();
             }
 
             if (!delayWrite)
             {
-                // TODO: write accounts.
+                WriteAccounts();
             }
         }
 
@@ -194,9 +202,111 @@ namespace EffinghamLibrary.Vaults
         /// </summary>
         public void FlushAccounts()
         {
-            // TODO: write accounts.
+            WriteAccounts();
         }
         #endregion IVault Support
+
+        #region Read/Write Methods
+        private void ReadAccounts()
+        {
+            if (!File.Exists(DataFile))
+            {
+                activeMemoryLock.EnterWriteLock();
+
+                try
+                {
+                    accounts = new List<IBankAccountMultipleCurrency>();
+                    isFlushed = true;
+                }
+                finally
+                {
+                    ExitWriteLock();
+                }
+            }
+            else
+            {
+                lock (persistenceBouncer)
+                {
+                    using (FileStream stream = new FileStream(DataFile, FileMode.OpenOrCreate))
+                    {
+                        if (stream.Length == 0)
+                        {
+                            activeMemoryLock.EnterWriteLock();
+                            try
+                            {
+                                accounts = new List<IBankAccountMultipleCurrency>();
+                                isFlushed = true;
+                            }
+                            finally
+                            {
+                                ExitWriteLock();
+                            }
+
+                            return;
+                        }
+
+                        SoapFormatter formatter = new SoapFormatter();
+                        ArrayList deserializedAccounts = (ArrayList)formatter.Deserialize(stream);
+
+                        activeMemoryLock.EnterWriteLock();
+
+                        try
+                        {
+                            accounts = deserializedAccounts.Cast<IBankAccountMultipleCurrency>().ToList();
+                            isFlushed = true;
+                        }
+                        finally
+                        {
+                            ExitWriteLock();
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Converts the generic collection of accounts to a non-generic collection and serializes it to disk.
+        /// </summary>
+        private void WriteAccounts()
+        {
+            ArrayList nonGenericAccounts = UngenericAccounts();
+
+            if (nonGenericAccounts != null)
+            {
+                lock (persistenceBouncer)
+                {
+                    using (FileStream outFile = File.OpenWrite(DataFile))
+                    {
+                        SoapFormatter formatter = new SoapFormatter();
+                        formatter.Serialize(outFile, nonGenericAccounts);
+                        activeMemoryLock.EnterWriteLock();
+                        isFlushed = true;
+                        ExitWriteLock();
+                    }
+                }
+            }
+        }
+
+        private ArrayList UngenericAccounts()
+        {
+            ArrayList ungenericAccounts = null;
+            activeMemoryLock.EnterReadLock();
+
+            try
+            {
+                if (!isFlushed)
+                {
+                    ungenericAccounts = new ArrayList(accounts);
+                }
+            }
+            finally
+            {
+                ExitReadLock();
+            }
+
+            return ungenericAccounts;
+        }
+        #endregion Read/Write Methods
 
         #region Singleton Support
         /// <summary>
@@ -224,7 +334,7 @@ namespace EffinghamLibrary.Vaults
         /// <summary>
         /// Detects redundant calls to Dispose.
         /// </summary>
-        private bool disposedValue = false;
+        private bool disposedValue;
 
         /// <summary>
         /// Centralizes all resource cleanup for the SoapVault. The finalizer and public Dispose() method
@@ -237,7 +347,7 @@ namespace EffinghamLibrary.Vaults
             {
                 if (disposing)
                 {
-
+                    WriteAccounts(); // Make sure in-memory data gets flushed to disk before the vault is garbage collected.
                 }
 
                 disposedValue = true;
@@ -263,11 +373,11 @@ namespace EffinghamLibrary.Vaults
         }
         #endregion IDisposable Support
 
-        #region Helpers
+        #region Safe Lock Management
         /// <summary>
         /// If a read lock is held for the in-memory read/write lock, it will be released.
         /// </summary>
-        private void ExitActiveMemoryReadLock()
+        private void ExitReadLock()
         {
             if (activeMemoryLock.IsReadLockHeld)
             {
@@ -278,7 +388,7 @@ namespace EffinghamLibrary.Vaults
         /// <summary>
         /// If a write lock is held for the in-memory read/write lock, it will be released.
         /// </summary>
-        private void ExitActiveMemoryWriteLock()
+        private void ExitWriteLock()
         {
             if (activeMemoryLock.IsWriteLockHeld)
             {
@@ -289,13 +399,13 @@ namespace EffinghamLibrary.Vaults
         /// <summary>
         /// If an upgradeable read lock is held for the in-memory read/write lock, it will be released.
         /// </summary>
-        private void ExitActiveMemoryUpgradeableReadLock()
+        private void ExitUpgradeableReadLock()
         {
             if (activeMemoryLock.IsUpgradeableReadLockHeld)
             {
                 activeMemoryLock.ExitUpgradeableReadLock();
             }
         }
-        #endregion Helpers
+        #endregion Safe Lock Management
     }
 }

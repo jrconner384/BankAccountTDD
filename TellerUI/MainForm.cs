@@ -16,11 +16,13 @@ namespace TellerUI
         private readonly IVault vault;
         #endregion Fields and Properties
 
+        #region Constructors
         public MainForm()
         {
             InitializeComponent();
             vault = SoapVault.Instance;
         }
+        #endregion Constructors
 
         #region Events
         private void btnNewAccount_Click(object sender, EventArgs e)
@@ -32,14 +34,28 @@ namespace TellerUI
 
             vault.AddAccount(newAccount);
             SummarizeAccounts();
-            //MessageBox.Show($"{newAccount.CustomerName} opened an account with a starting balance of {newAccount.Balance:c}");
         }
 
+        /// <summary>
+        /// Guarantees that form controls, especially concerning bound data, are correctly set up.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
             cmbCurrencyType.Items.AddRange(Enum.GetNames(typeof(CurrencyType)));
             cmbCurrencyType.SelectedIndex = 0;
             SummarizeAccounts();
+        }
+
+        /// <summary>
+        /// Disposes of resources, such as the vault.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            vault.Dispose();
         }
         #endregion Events
 

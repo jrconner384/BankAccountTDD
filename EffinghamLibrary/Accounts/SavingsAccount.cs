@@ -1,10 +1,12 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace EffinghamLibrary.Accounts
 {
     /// <summary>
     /// Represents an interest-bearing savings account.
     /// </summary>
+    [Serializable]
     public sealed class SavingsAccount : BankAccount, IInterestBearing
     {
         #region Fields and Properties
