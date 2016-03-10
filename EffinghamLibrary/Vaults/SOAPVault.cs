@@ -234,7 +234,16 @@ namespace EffinghamLibrary.Vaults
 
                 using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(encryptionKey, encryptionSalt)) // Need to know about these for the test
                 {
-                    // Also need to know about symmetric versus assymetric encryption.
+                    // Also need to know about symmetric versus asymetric encryption.
+                    // Asymmetric encrypts with one key and decrypts with another (i.e. public/private key pairs).
+                    // The slide says a public key encrypts and a private key decrypts.
+                    // Overhead for asymmetric encryption is greater by an order of magnitude.
+
+                    // Look into X509 certificates for test preperation
+                    // MakeCert command line program
+                    // System.Security.Cryptography.X509Certificates enable access to the certificate store and certificate metadata.
+
+                    // Test will ask about asymmetric, symmetric, and hashing algorithms.
 
                     using (AesManaged algorithm = new AesManaged())
                     {
