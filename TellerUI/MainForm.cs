@@ -47,6 +47,7 @@ namespace TellerUI
             cmbCurrencyType.Items.AddRange(Enum.GetNames(typeof(CurrencyType)));
             cmbCurrencyType.SelectedIndex = 0;
             cmbSort.SelectedIndex = 0;
+            cmbFilter.SelectedIndex = 0;
             SummarizeAccounts();
         }
 
