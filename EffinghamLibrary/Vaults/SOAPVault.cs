@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Soap;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using EffinghamLibrary.Accounts;
 
@@ -225,39 +229,63 @@ namespace EffinghamLibrary.Vaults
             }
             else
             {
-                lock (persistenceBouncer)
+                string encryptionKey = ConfigurationManager.AppSettings["encryptionKey"];
+                byte[] encryptionSalt = Encoding.Unicode.GetBytes(ConfigurationManager.AppSettings["encryptionSalt"]);
+
+                using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(encryptionKey, encryptionSalt)) // Need to know about these for the test
                 {
-                    using (FileStream stream = new FileStream(DataFile, FileMode.OpenOrCreate))
+                    // Also need to know about symmetric versus assymetric encryption.
+
+                    using (AesManaged algorithm = new AesManaged())
                     {
-                        if (stream.Length == 0)
+                        algorithm.Padding = PaddingMode.PKCS7;
+                        algorithm.Key = rfc.GetBytes(algorithm.KeySize / 8);
+                        algorithm.IV = rfc.GetBytes(algorithm.BlockSize / 8);
+
+                        using (ICryptoTransform decryptor = algorithm.CreateDecryptor())
                         {
-                            activeMemoryLock.EnterWriteLock();
-                            try
+                            lock (persistenceBouncer)
                             {
-                                accounts = new List<IBankAccountMultipleCurrency>();
-                                isFlushed = true;
+                                using (FileStream stream = new FileStream(DataFile, FileMode.OpenOrCreate))
+                                {
+                                    if (stream.Length == 0)
+                                    {
+                                        activeMemoryLock.EnterWriteLock();
+                                        try
+                                        {
+                                            accounts = new List<IBankAccountMultipleCurrency>();
+                                            isFlushed = true;
+                                        }
+                                        finally
+                                        {
+                                            ExitWriteLock();
+                                        }
+
+                                        return;
+                                    }
+
+                                    using (CryptoStream cryptoStream = new CryptoStream(stream, decryptor, CryptoStreamMode.Read))
+                                    {
+                                        using (GZipStream gzipStream = new GZipStream(cryptoStream, CompressionMode.Decompress))
+                                        {
+                                            SoapFormatter formatter = new SoapFormatter();
+                                            ArrayList deserializedAccounts = (ArrayList)formatter.Deserialize(gzipStream);
+
+                                            activeMemoryLock.EnterWriteLock();
+
+                                            try
+                                            {
+                                                accounts = deserializedAccounts.Cast<IBankAccountMultipleCurrency>().ToList();
+                                                isFlushed = true;
+                                            }
+                                            finally
+                                            {
+                                                ExitWriteLock();
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                            finally
-                            {
-                                ExitWriteLock();
-                            }
-
-                            return;
-                        }
-
-                        SoapFormatter formatter = new SoapFormatter();
-                        ArrayList deserializedAccounts = (ArrayList)formatter.Deserialize(stream);
-
-                        activeMemoryLock.EnterWriteLock();
-
-                        try
-                        {
-                            accounts = deserializedAccounts.Cast<IBankAccountMultipleCurrency>().ToList();
-                            isFlushed = true;
-                        }
-                        finally
-                        {
-                            ExitWriteLock();
                         }
                     }
                 }
@@ -273,15 +301,37 @@ namespace EffinghamLibrary.Vaults
 
             if (nonGenericAccounts != null)
             {
-                lock (persistenceBouncer)
+                string encryptionKey = ConfigurationManager.AppSettings["encryptionKey"];
+                byte[] encryptionSalt = Encoding.Unicode.GetBytes(ConfigurationManager.AppSettings["encryptionSalt"]);
+
+                using (Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(encryptionKey, encryptionSalt))
                 {
-                    using (FileStream outFile = File.OpenWrite(DataFile))
+                    using (AesManaged algorithm = new AesManaged())
                     {
-                        SoapFormatter formatter = new SoapFormatter();
-                        formatter.Serialize(outFile, nonGenericAccounts);
-                        activeMemoryLock.EnterWriteLock();
-                        isFlushed = true;
-                        ExitWriteLock();
+                        algorithm.Padding = PaddingMode.PKCS7;
+                        algorithm.Key = rfc.GetBytes(algorithm.KeySize / 8);
+                        algorithm.IV = rfc.GetBytes(algorithm.BlockSize / 8);
+
+                        using (ICryptoTransform encryptor = algorithm.CreateEncryptor())
+                        {
+                            lock (persistenceBouncer)
+                            {
+                                using (FileStream outFile = File.OpenWrite(DataFile))
+                                {
+                                    using (CryptoStream cryptoStream = new CryptoStream(outFile, encryptor, CryptoStreamMode.Write))
+                                    {
+                                        using (GZipStream zipStream = new GZipStream(cryptoStream, CompressionLevel.Optimal, true))
+                                        {
+                                            SoapFormatter formatter = new SoapFormatter();
+                                            formatter.Serialize(zipStream, nonGenericAccounts);
+                                            activeMemoryLock.EnterWriteLock();
+                                            isFlushed = true;
+                                            ExitWriteLock();
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
