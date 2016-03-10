@@ -28,13 +28,39 @@ namespace TellerUI
         #region Events
         private void btnNewAccount_Click(object sender, EventArgs e)
         {
-            IBankAccountMultipleCurrency newAccount = CreateBankAccountBasedOnTypeSelection(
-                txtCustomerName.Text,
-                decimal.Parse(txtStartingAmount.Text),
-                (CurrencyType)cmbCurrencyType.SelectedIndex);
+            decimal openingDeposit;
 
-            vault.AddAccount(newAccount);
-            SummarizeAccounts();
+            if (!decimal.TryParse(txtStartingAmount.Text, out openingDeposit))
+            {
+                MessageBox.Show(@"Invalid starting amount");
+                txtStartingAmount.Focus();
+                txtStartingAmount.SelectAll();
+                return;
+            }
+
+            try
+            {
+                vault.AddAccount(
+                    CreateBankAccountBasedOnTypeSelection(
+                        txtCustomerName.Text,
+                        openingDeposit,
+                        (CurrencyType)cmbCurrencyType.SelectedIndex));
+                SummarizeAccounts();
+            }
+            catch (ApplicationException ae)
+            {
+                // TODO: Log exception info once logging is enabled
+                MessageBox.Show(
+                    ae.Message,
+                    @"Business Rule Violation",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            catch (Exception)
+            {
+                // TODO: Log exception details. The user won't get any useful information from this exception.
+                MessageBox.Show(@"Please try again. If this continues, contact support.");
+            }
         }
 
         /// <summary>
@@ -101,7 +127,16 @@ namespace TellerUI
         /// <returns>The total number of savings accounts in the bank's vault.</returns>
         private int GetNumberOfSavingsAccounts()
         {
-            return vault.GetAccounts().OfType<SavingsAccount>().Count();
+            try
+            {
+                return vault.GetAccounts().OfType<SavingsAccount>().Count();
+            }
+            catch (ApplicationException ae)
+            {
+                MessageBox.Show(ae.Message, @"Couldn't Count Number of Savings Accounts", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -110,7 +145,16 @@ namespace TellerUI
         /// <returns>The total number of checking accounts in the bank's vault.</returns>
         private int GetNumberOfCheckingAccounts()
         {
-            return vault.GetAccounts().OfType<CheckingAccount>().Count();
+            try
+            {
+                return vault.GetAccounts().OfType<CheckingAccount>().Count();
+            }
+            catch (ApplicationException ae)
+            {
+                MessageBox.Show(ae.Message, @"Couldn't Count Number of Checking Accounts", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -119,10 +163,23 @@ namespace TellerUI
         /// <returns>The sum of all accounts' balances in the bank's vault.</returns>
         private decimal GetSumOfAllBalances()
         {
-            return vault.GetAccounts().Sum(account => account.Balance);
+            try
+            {
+                return vault.GetAccounts().Sum(account => account.Balance);
+            }
+            catch (ApplicationException ae)
+            {
+                MessageBox.Show(
+                    ae.Message,
+                    @"Couldn't Sum All Account Balances",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+            return 0.0m;
         }
 
-        private int SortByCustomerNameAndBalanceDescending(IBankAccountMultipleCurrency firstAccount, IBankAccountMultipleCurrency secondAccount)
+        private static int SortByCustomerNameAndBalanceDescending(IBankAccountMultipleCurrency firstAccount, IBankAccountMultipleCurrency secondAccount)
         {
             int result = string.Compare(firstAccount.CustomerName, secondAccount.CustomerName, StringComparison.Ordinal);
 
@@ -148,12 +205,27 @@ namespace TellerUI
 
         private IEnumerable<IBankAccountMultipleCurrency> SortAccountsByUserSelection()
         {
-            List<IBankAccountMultipleCurrency> sortedAccounts = vault.GetAccounts().ToList();
+            List<IBankAccountMultipleCurrency> sortedAccounts;
+            try
+            {
+                sortedAccounts = vault.GetAccounts().ToList();
+            }
+            catch (ApplicationException ae)
+            {
+                MessageBox.Show(
+                    ae.Message,
+                    @"Couldn't Retrieve Accounts",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return null;
+            }
 
             switch (cmbSort.SelectedIndex)
             {
                 case 0: // Account number
-                    sortedAccounts.Sort((a, b) => a.AccountNumber.CompareTo(b.AccountNumber));
+                    sortedAccounts.Sort(
+                        (a, b) =>
+                            a.AccountNumber.CompareTo(b.AccountNumber));
                     break;
                 case 1: // Customer name
                     sortedAccounts.Sort(SortByCustomerNameAndBalanceDescending);
