@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TellerUI", "TellerUI\Teller
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffinghamLibraryTests", "EffinghamLibraryTests\EffinghamLibraryTests.csproj", "{88A1B10B-A579-4E92-9E6C-08C30019038F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EffinghamDataAccess", "EffinghamDataAccess\EffinghamDataAccess.csproj", "{18C04B63-ED6F-4EFF-BDAF-0BC3FC763328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbBuilder", "DbBuilder\DbBuilder.csproj", "{1C83362B-9336-428F-A028-2399FF356E34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88A1B10B-A579-4E92-9E6C-08C30019038F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18C04B63-ED6F-4EFF-BDAF-0BC3FC763328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18C04B63-ED6F-4EFF-BDAF-0BC3FC763328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18C04B63-ED6F-4EFF-BDAF-0BC3FC763328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18C04B63-ED6F-4EFF-BDAF-0BC3FC763328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C83362B-9336-428F-A028-2399FF356E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C83362B-9336-428F-A028-2399FF356E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C83362B-9336-428F-A028-2399FF356E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C83362B-9336-428F-A028-2399FF356E34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
