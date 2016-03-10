@@ -11,13 +11,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EffinghamLibrary.Accounts;
+using EffinghamLibrary.Helpers;
 
 namespace EffinghamLibrary.Vaults
 {
     /// <summary>
     /// Implements a vault using SOAP as the persistence backbone.
     /// </summary>
-    public class SoapVault : IVault
+    public sealed class SoapVault : IVault
     {
         #region Fields and Properties
         /// <summary>
@@ -335,13 +336,16 @@ namespace EffinghamLibrary.Vaults
                                 {
                                     using (CryptoStream cryptoStream = new CryptoStream(outFile, encryptor, CryptoStreamMode.Write))
                                     {
-                                        using (GZipStream zipStream = new GZipStream(cryptoStream, CompressionLevel.Optimal, true))
+                                        using (ThreadedPipeStream pipeStream = new ThreadedPipeStream(cryptoStream))
                                         {
-                                            SoapFormatter formatter = new SoapFormatter();
-                                            formatter.Serialize(zipStream, nonGenericAccounts);
-                                            activeMemoryLock.EnterWriteLock();
-                                            isFlushed = true;
-                                            ExitWriteLock();
+                                            using (GZipStream zipStream = new GZipStream(pipeStream, CompressionLevel.Optimal, true))
+                                            {
+                                                SoapFormatter formatter = new SoapFormatter();
+                                                formatter.Serialize(zipStream, nonGenericAccounts);
+                                                activeMemoryLock.EnterWriteLock();
+                                                isFlushed = true;
+                                                ExitWriteLock();
+                                            }
                                         }
                                     }
                                 }
@@ -406,7 +410,7 @@ namespace EffinghamLibrary.Vaults
         /// should not be modified.
         /// </summary>
         /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!disposedValue)
             {

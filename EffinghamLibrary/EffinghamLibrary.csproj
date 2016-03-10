@@ -41,6 +41,8 @@
     <Compile Include="CurrencyType.cs" />
     <Compile Include="Accounts\IBankAccount.cs" />
     <Compile Include="Accounts\IInterestBearing.cs" />
+    <Compile Include="Helpers\AbstractStreamBase.cs" />
+    <Compile Include="Helpers\ThreadedPipeStream.cs" />
     <Compile Include="Vaults\IVault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Accounts\SavingsAccount.cs" />
