@@ -71,10 +71,13 @@ namespace TellerUI
         private void MainForm_Load(object sender, EventArgs e)
         {
             cmbCurrencyType.Items.AddRange(Enum.GetNames(typeof(CurrencyType)));
+
+            UnhookRefreshEvents();
             cmbCurrencyType.SelectedIndex = 0;
             cmbSort.SelectedIndex = 0;
             cmbFilter.SelectedIndex = 0;
             SummarizeAccounts();
+            RehookRefreshEvents();
         }
 
         /// <summary>
@@ -85,6 +88,16 @@ namespace TellerUI
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             vault.Dispose();
+        }
+
+        private void cmbSort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SummarizeAccounts();
+        }
+
+        private void cmbFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SummarizeAccounts();
         }
         #endregion Events
 
@@ -193,52 +206,38 @@ namespace TellerUI
         /// <summary>
         /// Syncs the list of accounts with the in-memory collection in the vault.
         /// </summary>
-        private void RefreshAccountsList()
+        private async void RefreshAccountsList()
         {
             lstAccounts.Items.Clear();
+            List <IBankAccountMultipleCurrency> accounts = (await vault.GetAccountsAsync()).ToList();
 
-            foreach (IBankAccountMultipleCurrency account in GetFilteredAccountCollection(SortAccountsByUserSelection()))
+            foreach (IBankAccountMultipleCurrency account in GetFilteredAccountCollection(SortAccountsByUserSelection(accounts)))
             {
                 lstAccounts.Items.Add(account);
             }
         }
 
-        private IEnumerable<IBankAccountMultipleCurrency> SortAccountsByUserSelection()
+        private IEnumerable<IBankAccountMultipleCurrency> SortAccountsByUserSelection(List<IBankAccountMultipleCurrency> accounts)
         {
-            List<IBankAccountMultipleCurrency> sortedAccounts;
-            try
-            {
-                sortedAccounts = vault.GetAccounts().ToList();
-            }
-            catch (ApplicationException ae)
-            {
-                MessageBox.Show(
-                    ae.Message,
-                    @"Couldn't Retrieve Accounts",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return null;
-            }
-
             switch (cmbSort.SelectedIndex)
             {
                 case 0: // Account number
-                    sortedAccounts.Sort(
+                    accounts.Sort(
                         (a, b) =>
                             a.AccountNumber.CompareTo(b.AccountNumber));
                     break;
                 case 1: // Customer name
-                    sortedAccounts.Sort(SortByCustomerNameAndBalanceDescending);
+                    accounts.Sort(SortByCustomerNameAndBalanceDescending);
                     break;
                 case 2: // Account balance descending
-                    sortedAccounts.Sort((a, b) => -1 * a.Balance.CompareTo(b.Balance));
+                    accounts.Sort((a, b) => -1 * a.Balance.CompareTo(b.Balance));
                     break;
                 default:
                     throw new ApplicationException("An unsupported sort order was attempted.");
             }
 
-            return sortedAccounts;
-        } 
+            return accounts;
+        }
 
         private IEnumerable<IBankAccountMultipleCurrency> GetFilteredAccountCollection(IEnumerable<IBankAccountMultipleCurrency> sortedAccounts)
         {
@@ -259,17 +258,19 @@ namespace TellerUI
             }
 
             return filterQuery;
-        } 
+        }
+
+        private void UnhookRefreshEvents()
+        {
+            cmbSort.SelectedIndexChanged -= cmbSort_SelectedIndexChanged;
+            cmbFilter.SelectedIndexChanged -= cmbFilter_SelectedIndexChanged;
+        }
+
+        private void RehookRefreshEvents()
+        {
+            cmbSort.SelectedIndexChanged += cmbSort_SelectedIndexChanged;
+            cmbFilter.SelectedIndexChanged += cmbFilter_SelectedIndexChanged;
+        }
         #endregion Helpers
-
-        private void cmbSort_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SummarizeAccounts();
-        }
-
-        private void cmbFilter_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SummarizeAccounts();
-        }
     }
 }

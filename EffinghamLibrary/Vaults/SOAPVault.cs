@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Soap;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using EffinghamLibrary.Accounts;
 
 namespace EffinghamLibrary.Vaults
@@ -207,6 +208,11 @@ namespace EffinghamLibrary.Vaults
         public void FlushAccounts()
         {
             WriteAccounts();
+        }
+
+        public Task<IEnumerable<IBankAccountMultipleCurrency>> GetAccountsAsync()
+        {
+            return Task.Run((Func<IEnumerable<IBankAccountMultipleCurrency>>)GetAccounts);
         }
         #endregion IVault Support
 

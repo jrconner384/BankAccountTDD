@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using EffinghamLibrary.Accounts;
 
 namespace EffinghamLibrary.Vaults
@@ -53,5 +54,7 @@ namespace EffinghamLibrary.Vaults
         /// Updates accounts queued in active memory as indicated by delayWrite flags.
         /// </summary>
         void FlushAccounts();
+
+        Task<IEnumerable<IBankAccountMultipleCurrency>> GetAccountsAsync();
     }
 }
