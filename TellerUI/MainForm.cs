@@ -18,10 +18,10 @@ namespace TellerUI
         #endregion Fields and Properties
 
         #region Constructors
-        public MainForm()
+        public MainForm(IVault injectedVault)
         {
             InitializeComponent();
-            vault = SoapVault.Instance;
+            vault = injectedVault;
         }
         #endregion Constructors
 
@@ -46,6 +46,7 @@ namespace TellerUI
         {
             cmbCurrencyType.Items.AddRange(Enum.GetNames(typeof(CurrencyType)));
             cmbCurrencyType.SelectedIndex = 0;
+            cmbSort.SelectedIndex = 0;
             SummarizeAccounts();
         }
 
@@ -120,20 +121,82 @@ namespace TellerUI
             return vault.GetAccounts().Sum(account => account.Balance);
         }
 
+        private int SortByCustomerNameAndBalanceDescending(IBankAccountMultipleCurrency firstAccount, IBankAccountMultipleCurrency secondAccount)
+        {
+            int result = string.Compare(firstAccount.CustomerName, secondAccount.CustomerName, StringComparison.Ordinal);
+
+            if (result == 0)
+            {
+                result = -1 * firstAccount.Balance.CompareTo(secondAccount.Balance);
+            }
+            return result;
+        }
+
         /// <summary>
         /// Syncs the list of accounts with the in-memory collection in the vault.
         /// </summary>
         private void RefreshAccountsList()
         {
             lstAccounts.Items.Clear();
-            List<IBankAccountMultipleCurrency> sortedAccounts = vault.GetAccounts().ToList();
-            sortedAccounts.Sort();
 
-            foreach (IBankAccountMultipleCurrency account in sortedAccounts)
+            foreach (IBankAccountMultipleCurrency account in GetFilteredAccountCollection(SortAccountsByUserSelection()))
             {
                 lstAccounts.Items.Add(account);
             }
         }
+
+        private IEnumerable<IBankAccountMultipleCurrency> SortAccountsByUserSelection()
+        {
+            List<IBankAccountMultipleCurrency> sortedAccounts = vault.GetAccounts().ToList();
+
+            switch (cmbSort.SelectedIndex)
+            {
+                case 0: // Account number
+                    sortedAccounts.Sort((a, b) => a.AccountNumber.CompareTo(b.AccountNumber));
+                    break;
+                case 1: // Customer name
+                    sortedAccounts.Sort(SortByCustomerNameAndBalanceDescending);
+                    break;
+                case 2: // Account balance descending
+                    sortedAccounts.Sort((a, b) => -1 * a.Balance.CompareTo(b.Balance));
+                    break;
+                default:
+                    throw new ApplicationException("An unsupported sort order was attempted.");
+            }
+
+            return sortedAccounts;
+        } 
+
+        private IEnumerable<IBankAccountMultipleCurrency> GetFilteredAccountCollection(IEnumerable<IBankAccountMultipleCurrency> sortedAccounts)
+        {
+            IEnumerable<IBankAccountMultipleCurrency> filterQuery = from account in sortedAccounts
+                                                                    select account;
+
+            if (cmbFilter.SelectedIndex == 1) // Savings
+            {
+                filterQuery = from account in filterQuery
+                              where account is SavingsAccount
+                              select account;
+            }
+            else if (cmbFilter.SelectedIndex == 2) // Checking
+            {
+                filterQuery = from account in filterQuery
+                              where account is CheckingAccount
+                              select account;
+            }
+
+            return filterQuery;
+        } 
         #endregion Helpers
+
+        private void cmbSort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SummarizeAccounts();
+        }
+
+        private void cmbFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SummarizeAccounts();
+        }
     }
 }

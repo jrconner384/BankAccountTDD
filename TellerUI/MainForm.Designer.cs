@@ -41,6 +41,10 @@
             this.lblAccountType = new System.Windows.Forms.Label();
             this.radSavings = new System.Windows.Forms.RadioButton();
             this.lstAccounts = new System.Windows.Forms.ListBox();
+            this.lblSort = new System.Windows.Forms.Label();
+            this.cmbSort = new System.Windows.Forms.ComboBox();
+            this.lblFilter = new System.Windows.Forms.Label();
+            this.cmbFilter = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // lblCustomerName
@@ -156,17 +160,67 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstAccounts.FormattingEnabled = true;
             this.lstAccounts.ItemHeight = 16;
-            this.lstAccounts.Location = new System.Drawing.Point(331, 13);
+            this.lstAccounts.Location = new System.Drawing.Point(331, 43);
             this.lstAccounts.Name = "lstAccounts";
-            this.lstAccounts.Size = new System.Drawing.Size(440, 212);
+            this.lstAccounts.Size = new System.Drawing.Size(465, 180);
             this.lstAccounts.TabIndex = 0;
             this.lstAccounts.TabStop = false;
+            // 
+            // lblSort
+            // 
+            this.lblSort.AutoSize = true;
+            this.lblSort.Location = new System.Drawing.Point(331, 16);
+            this.lblSort.Name = "lblSort";
+            this.lblSort.Size = new System.Drawing.Size(38, 17);
+            this.lblSort.TabIndex = 7;
+            this.lblSort.Text = "Sort:";
+            // 
+            // cmbSort
+            // 
+            this.cmbSort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSort.FormattingEnabled = true;
+            this.cmbSort.Items.AddRange(new object[] {
+            "Account Number",
+            "Customer Name",
+            "Account Balance (descending)"});
+            this.cmbSort.Location = new System.Drawing.Point(375, 12);
+            this.cmbSort.Name = "cmbSort";
+            this.cmbSort.Size = new System.Drawing.Size(218, 24);
+            this.cmbSort.TabIndex = 7;
+            this.cmbSort.SelectedIndexChanged += new System.EventHandler(this.cmbSort_SelectedIndexChanged);
+            // 
+            // lblFilter
+            // 
+            this.lblFilter.AutoSize = true;
+            this.lblFilter.Location = new System.Drawing.Point(621, 16);
+            this.lblFilter.Name = "lblFilter";
+            this.lblFilter.Size = new System.Drawing.Size(43, 17);
+            this.lblFilter.TabIndex = 0;
+            this.lblFilter.Text = "Filter:";
+            // 
+            // cmbFilter
+            // 
+            this.cmbFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFilter.FormattingEnabled = true;
+            this.cmbFilter.Items.AddRange(new object[] {
+            "All",
+            "Savings",
+            "Checking"});
+            this.cmbFilter.Location = new System.Drawing.Point(671, 12);
+            this.cmbFilter.Name = "cmbFilter";
+            this.cmbFilter.Size = new System.Drawing.Size(121, 24);
+            this.cmbFilter.TabIndex = 8;
+            this.cmbFilter.SelectedIndexChanged += new System.EventHandler(this.cmbFilter_SelectedIndexChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(783, 276);
+            this.ClientSize = new System.Drawing.Size(808, 276);
+            this.Controls.Add(this.cmbFilter);
+            this.Controls.Add(this.lblFilter);
+            this.Controls.Add(this.cmbSort);
+            this.Controls.Add(this.lblSort);
             this.Controls.Add(this.lstAccounts);
             this.Controls.Add(this.radSavings);
             this.Controls.Add(this.lblAccountType);
@@ -205,6 +259,10 @@
         private System.Windows.Forms.Label lblAccountType;
         private System.Windows.Forms.RadioButton radSavings;
         private System.Windows.Forms.ListBox lstAccounts;
+        private System.Windows.Forms.Label lblSort;
+        private System.Windows.Forms.ComboBox cmbSort;
+        private System.Windows.Forms.Label lblFilter;
+        private System.Windows.Forms.ComboBox cmbFilter;
     }
 }
 
