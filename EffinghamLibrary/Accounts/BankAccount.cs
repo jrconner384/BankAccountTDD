@@ -153,6 +153,7 @@ namespace EffinghamLibrary.Accounts
         }
 
         internal BankAccount(int accountNumber, string customerName, decimal currentBalance)
+            : this()
         {
             lock (instanceBouncer)
             {

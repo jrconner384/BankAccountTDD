@@ -54,6 +54,7 @@
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\InvalidAccountTypeException.cs" />
     <Compile Include="Helpers\ThreadedPipeStream.cs" />
+    <Compile Include="Vaults\EntityFrameworkVault.cs" />
     <Compile Include="Vaults\IVault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Accounts\SavingsAccount.cs" />

@@ -24,7 +24,7 @@ namespace TellerUI
         private static void InitializeDependencyInjection()
         {
             injectionContainer = new Container();
-            injectionContainer.RegisterSingleton<IVault>(SoapVault.Instance); // The type of vault needs to be specified here and only here.
+            injectionContainer.RegisterSingleton<IVault>(EntityFrameworkVault.Instance); // The type of vault needs to be specified here and only here.
             injectionContainer.Register<MainForm>();
         }
     }

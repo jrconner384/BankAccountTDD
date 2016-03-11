@@ -57,7 +57,9 @@ __`System.Collections.Concurrent`__ namespace
         * One thread is writing, one is reading. The reading thread won't read until the writing thread is done.
     * Some kind of pipe stream uses this collection to compress on one thread and encrypt on another once bytes are compressed
 
-## March 11
-* Adding in cross-layer access to SQL Server database.
+### March 11
+* Adding in cross-layer access to SQL Server database (i.e. new IVault implementation).
+    * The new vault uses a class which inherits from DbContext. This is not thread-safe.
+    * Either need to add locking in the new vault or create new contexts for each atomic DB operation.
 * Adding custom exception type.
 * Adding helper methods to marshall and umarshall business objects.
