@@ -64,7 +64,7 @@ __`System.Collections.Concurrent`__ namespace
 * Adding custom exception type.
 * Adding helper methods to marshall and umarshall business objects.
 
-### General Topics
+#### General Topics
 * Named parameters
 * Default parameters
 * Generics
@@ -172,4 +172,150 @@ __Creating Classes, etc.__
 #### Module 5
 * Inheritance
 * `abstract`
-* `sealed`
+    * "The worst of all worlds" according to Jeff.
+        * Maybe because of single inheritance? I'm not really following his reasoning.
+* `sealed` (like Java's `final` as applied to classes)
+* `virtual`, `override`, `new` to hide inherited members ("hiding" or "shadowing")
+* `base` to call methods and constructors starting one level up in the inheritance hierarchy
+* Custom exceptions
+    * Inherit from `ApplicationException`
+    * Implement `base()`, `base(string message)`, `base(string message, Exception inner)` constructors
+    * Optionally add members
+    * Allows for more granular error handling by checking exception type
+* Inherit from generic type
+    * `public class CustomList : List<int>`
+    * `public class CustomList<T> : List<T>`
+* Extension methods
+    * `static` class
+    * `static` method
+    * `this` keyword on first parameter to method
+
+#### Module 7: Accessing a Database
+* Creating and using Entity Data models
+    * "Code First"
+        * Write C# first then let Entity Framework create DB using code structure
+    * "Database First"
+        * Create EF data model using existing database schema
+        * Automatically divines entity relationships
+        * EF versions don't really get along well
+    * "Model First"
+        * Add "ADO.NET Entity Data Model" > "Empty EF Designer Model"
+        * Basically create ER diagram and use it to generate DDL for the database and C#
+* Querying data by using LINQ
+
+#### Module 8: Creating and Accessing Data
+* Web connectivity
+    * `System.Net` namespace
+        * `WebRequest` (abstract)
+        * `WebResponse` (abstract)
+        * `HttpWebRequest`
+        * `HttpWebResponse`
+        * `FtpWebRequest`
+        * `FtpWebResponse`
+        * `FileWebRequest`
+        * `FileWebResponse`
+    * `DataContract` and `DataMember` attributes expose types from a web service
+    * Creating a request and processing a response
+        * Get a URI
+        * Create a request object
+        * Get a response object from the request object
+        * Read the properties in the response object
+    * Authenitcating a web request
+        * Create the request object
+            * Use the `NetworkCredential` class
+            * Use the `CredentialCache` class
+                * Info from the OS
+                * `CredentialCache.DefaultCredentials;`
+            * Use the `X509Certificate2` class
+                * If the service requires a certificate
+    * Sending and receiving data
+        * Send data
+            * Create URI
+            * Encode data (i.e. JSON object)
+            * Create request
+            * Set stuff like request method, content type
+            * Get the request's data stream
+            * Write to the stream
+            * Close the stream
+        * Process response
+            * Get response from request
+            * Get stream from response
+            * Read stream
+            * Close stream
+    * Creating WCF data service (distinct from other WCF services)
+        * AKA "Project Astoria", "ADO.NET Data Services", "WCF Data Services"
+        * Might not be on exam since it kind of flopped
+        * This is the "automated magical" way to create services
+        * Auto-generates service code (to an extent)
+        * Can specify which entities can be accessed and if they are read or read/write
+        * Doesn't give granular control (reads all or nothing)
+        * Data format "OData" is an extension of RSS ATOM
+            * XML-based
+            * Pushed by Microsoft
+            * Everyone went with JSON instead
+            * Built-in means of querying data (looks RESTful)
+        * Can expose specific service methods
+
+#### Module 9: Designing the UI for Graphical Applications
+* General WPF
+    * Default template determines how controls render
+        * Obviously can be overridden. Can write custom templates.
+    * Information moves from outer elements to inner elements (i.e. tag nesting creates information scope analagous to block nesting in code)
+* Using XAML
+    * Rendering engine follows top-down hierarchy
+    * Properties of controls can be determined by the tags they are nested within
+        * Called "attached properties" since the enclosing tag attached propery information to the enclosed tags.
+* Binding controls
+    * Use `xmlns` property to bring in a data class' namespace.
+    * In control to bind data to, do something like this
+
+```
+<Slider x:Name="mySlider" Minimum="8" Maximum="50" />
+<TextBlock x:Name="txtTarget" FontSize="{Binding ElementName=mySlider Path=Value}" />
+<!-- This will take the value of the slider to determine the font size in the TextBlock -->
+```
+* Stying UI
+
+#### Module 11: Integrating with Unmanaged Code
+* Basically, reach outside of .NET to interact with COM objects
+* dynamic data type
+    * i.e. `ViewBag` in MVC projects
+    * They don't do compile-time checking.
+        * Delays checking until runtime.
+        * No IntelliSense.
+        * Can assign anything to any property.
+    * Use `dynamic` keywork to create your own.
+        * `dynamic thing = "dynamic thing";`
+    * Useful for interacting with COM objects
+    * Added to help implemented dynamically-typed languages on the CLR
+
+#### Module 12: Reusable Types and Assemblies
+* Export library project as DLL
+    * Put it in the GAC
+        * Go to project properties > Signing Tab
+        * Select "Sign the assembly"
+        * Create a Strong Name Key file
+        * Every time the project is compiled, a digital signature will be applied and it can be pushed to the GAC
+        * Need to update assembly version to make sure not to break users of old versions
+            * GAC will provide the latest build of the DLL of the specified version number
+* GAC was created to maintain multiple versions of the same assemblies so one program using a new version doesn't break another program using an old version
+* Two tools:
+    * sn.exe generates strong name key file via CLI
+    * gacutil.exe to move things into and out of the GAC via CLI
+* ildsam.exe to decompile MSIL
+
+#### Miscellaneous
+* Overloading operators
+
+```
+public static decimal operator +(IBankAccountMultipleCurrency leftAddend, IBankAccountMultipleCurrency rightAddend)
+{
+    return rightAddend.Balance + leftAddend.Balance;
+}
+
+public static IBankAccountMultipleCurrency operator +(IBankAccountMultipleCurrency account, decimal amount)
+{
+    account.Deposit(amount);
+    return account;
+}
+```
