@@ -43,6 +43,12 @@ namespace EffinghamLibrary.Accounts
             // TODO: Can I make the CurrencyType param default to CurrencyType.Dollar?
         }
 
+        internal SavingsAccount(int accountNumber, string customerName, decimal currentBalance)
+            : base(accountNumber, customerName, currentBalance)
+        {
+
+        }
+
         /// <summary>
         /// Deserializes stored data into a SavingsAccount.
         /// </summary>

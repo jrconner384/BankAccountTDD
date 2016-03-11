@@ -30,7 +30,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
@@ -42,6 +51,8 @@
     <Compile Include="Accounts\IBankAccount.cs" />
     <Compile Include="Accounts\IInterestBearing.cs" />
     <Compile Include="Helpers\AbstractStreamBase.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\InvalidAccountTypeException.cs" />
     <Compile Include="Helpers\ThreadedPipeStream.cs" />
     <Compile Include="Vaults\IVault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -49,8 +60,16 @@
     <Compile Include="Vaults\SoapVault.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="Documentation\BusinessLayerDiagram.cd" />
     <None Include="Documentation\Notes.md" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EffinghamDataAccess\EffinghamDataAccess.csproj">
+      <Project>{18c04b63-ed6f-4eff-bdaf-0bc3fc763328}</Project>
+      <Name>EffinghamDataAccess</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

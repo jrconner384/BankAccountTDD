@@ -152,6 +152,24 @@ namespace EffinghamLibrary.Accounts
             Deposit(startingBalance, currency);
         }
 
+        internal BankAccount(int accountNumber, string customerName, decimal currentBalance)
+        {
+            lock (instanceBouncer)
+            {
+                this.accountNumber = accountNumber;
+                this.customerName = customerName;
+                balance = currentBalance;
+
+                lock (ClassBouncer)
+                {
+                    if (nextAccountNumber <= accountNumber)
+                    {
+                        nextAccountNumber = accountNumber + 1;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Deserialize an account from serialized data.
         /// </summary>

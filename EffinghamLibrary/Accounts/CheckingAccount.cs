@@ -34,6 +34,12 @@ namespace EffinghamLibrary.Accounts
 
         }
 
+        internal CheckingAccount(int accountNumber, string customerName, decimal currentBalance)
+            : base(accountNumber, customerName, currentBalance)
+        {
+            
+        }
+
         /// <summary>
         /// Deserializes a CheckingAccount from serialized data.
         /// </summary>

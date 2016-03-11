@@ -56,3 +56,8 @@ __`System.Collections.Concurrent`__ namespace
     * When you remove data, it blocks until it has data.
         * One thread is writing, one is reading. The reading thread won't read until the writing thread is done.
     * Some kind of pipe stream uses this collection to compress on one thread and encrypt on another once bytes are compressed
+
+## March 11
+* Adding in cross-layer access to SQL Server database.
+* Adding custom exception type.
+* Adding helper methods to marshall and umarshall business objects.
