@@ -63,3 +63,113 @@ __`System.Collections.Concurrent`__ namespace
     * Either need to add locking in the new vault or create new contexts for each atomic DB operation.
 * Adding custom exception type.
 * Adding helper methods to marshall and umarshall business objects.
+
+### General Topics
+* Named parameters
+* Default parameters
+* Generics
+* Parameter arrays
+    * Keyword `params`
+    * `void method(int number, params string[] s)`
+    * Like Java's `args`
+    * Can be used on any type.
+* Monitoring applications
+    * Logging
+        * Provides info to users and administrators
+        * Windows event log
+        * Text files
+        * Custom logging destinations
+    * Tracing
+        * Provides information to developers
+        * `Debug` and `Trace` classes
+            * Same API in both classes
+            * Debug compile targets execute `Debug` calls.
+            * Release compile targets execute `Trace` calls.
+
+```
+// Go to Administrative Tools > Event Viewer
+// Write to application event log
+// Can create our own event log types
+string eventLog = "Application";
+string eventSource = "Logging Demo";
+string eventMessage = "Hello from the Logging Demo application";
+
+// They'll probably ask about this.
+// Make sure to check if the source exists and create it if it doesn't.
+if (!EventLog.SourceExists(eventSource)){
+    EventLog.CreateEventSource(eventSource, eventLog);
+}
+// Write to the log
+EventLog.WriteEntry(eventSource, eventMessage);
+
+```
+
+* Performance Counters
+    * Administrative Tools > Performance Monitor (in Windows)
+    * Can also Run > perfmon
+    * Need to know reading and creating performance counters
+
+```
+// Example is a shortened version of what's in the class materials.
+
+if (!PerformanceCounterCategory.Exists("FourthCoffeeOrders"))
+{
+    CounterCreationDataCollection counter = new CounterCreationDataCollection();
+    CounterCreationData totalOrders = new CounterCreationData();
+    totalOrders.CounterName = "# Orders";
+    totalOrders.CounterHelp = "Total number of orders placed";
+    totalOrders.CounterType = PerformanceCounterType.NumberOfItems32;
+    counters.Add(totalOrders);
+    PerformanceCounterCategory.Create("FourthCoffeeOrders", "A custom category");
+}
+
+PerformanceCounter counterOrders = new PerformanceCounter("FourthCoffeeOrders", "# Orders", false);
+
+public void OrderCoffee()
+{
+    counterOrders.Increment();
+
+    // Logic for ordering coffee
+}
+```
+
+#### Module 4
+__Creating Classes, etc.__
+
+* Remember 'Arrange, Act, Assert' testing structure
+* Avoid explicit interface implementations
+    * When working of types using explicit implementations, you have to cast the variable to get at the interface's members
+    * Useful when creating objects via composability.
+    * Resolve namespace collisions.
+    * Some MS documentation encourages explicit implementation.
+* Generics
+    * Type safety
+    * No casting
+    * No boxing and unboxing
+    * Constrained generics
+    * LIFOs, FIFOs, etc.
+    * Collection Interfaces
+        * `IEnumerable` and `IEnumerable<T>`
+            * `GetEnumerator()` -> `IEnumerator<T>` should expose all members of collection (?)
+            * Implemented by arrays
+            * `Current` gets the item the enumerator is pointing to
+            * `MoveNext` advances the enumerator to the next item
+            * `Reset` moves the enumerator back to the start
+        * `ICollection<T>` common to all generic collections
+            * Can always use `foreach`
+            * `Add`, `Clear`, `Contains`, `CopyTo`, `Remove`
+        * `IList<T> : ICollection<T>`
+            * Looking up items by index number
+            * `Insert`
+            * `RemoveAt`
+            * `IndexOf`
+        * `IDictionary<T> : ICollection<T>`
+            * Key-value pairs
+            * `Item`
+            * `Keys`
+            * `Values`
+
+#### Module 5
+* Inheritance
+* `abstract`
+* `sealed`

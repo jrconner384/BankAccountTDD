@@ -45,6 +45,9 @@
             this.cmbSort = new System.Windows.Forms.ComboBox();
             this.lblFilter = new System.Windows.Forms.Label();
             this.cmbFilter = new System.Windows.Forms.ComboBox();
+            this.btnDepositFive = new System.Windows.Forms.Button();
+            this.btnWithdrawFive = new System.Windows.Forms.Button();
+            this.btnMonthlyInterest = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblCustomerName
@@ -98,7 +101,7 @@
             // 
             this.lblSummary.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblSummary.AutoSize = true;
-            this.lblSummary.Location = new System.Drawing.Point(13, 250);
+            this.lblSummary.Location = new System.Drawing.Point(13, 297);
             this.lblSummary.Name = "lblSummary";
             this.lblSummary.Size = new System.Drawing.Size(81, 17);
             this.lblSummary.TabIndex = 0;
@@ -162,7 +165,7 @@
             this.lstAccounts.ItemHeight = 16;
             this.lstAccounts.Location = new System.Drawing.Point(331, 43);
             this.lstAccounts.Name = "lstAccounts";
-            this.lstAccounts.Size = new System.Drawing.Size(465, 180);
+            this.lstAccounts.Size = new System.Drawing.Size(465, 212);
             this.lstAccounts.TabIndex = 0;
             this.lstAccounts.TabStop = false;
             // 
@@ -212,11 +215,44 @@
             this.cmbFilter.TabIndex = 8;
             this.cmbFilter.SelectedIndexChanged += new System.EventHandler(this.cmbFilter_SelectedIndexChanged);
             // 
+            // btnDepositFive
+            // 
+            this.btnDepositFive.Location = new System.Drawing.Point(409, 261);
+            this.btnDepositFive.Name = "btnDepositFive";
+            this.btnDepositFive.Size = new System.Drawing.Size(111, 35);
+            this.btnDepositFive.TabIndex = 9;
+            this.btnDepositFive.Text = "Deposit $5";
+            this.btnDepositFive.UseVisualStyleBackColor = true;
+            this.btnDepositFive.Click += new System.EventHandler(this.btnDepositFive_Click);
+            // 
+            // btnWithdrawFive
+            // 
+            this.btnWithdrawFive.Location = new System.Drawing.Point(526, 261);
+            this.btnWithdrawFive.Name = "btnWithdrawFive";
+            this.btnWithdrawFive.Size = new System.Drawing.Size(136, 35);
+            this.btnWithdrawFive.TabIndex = 10;
+            this.btnWithdrawFive.Text = "Withdraw $5";
+            this.btnWithdrawFive.UseVisualStyleBackColor = true;
+            this.btnWithdrawFive.Click += new System.EventHandler(this.btnWithdrawFive_Click);
+            // 
+            // btnMonthlyInterest
+            // 
+            this.btnMonthlyInterest.Location = new System.Drawing.Point(668, 261);
+            this.btnMonthlyInterest.Name = "btnMonthlyInterest";
+            this.btnMonthlyInterest.Size = new System.Drawing.Size(128, 35);
+            this.btnMonthlyInterest.TabIndex = 11;
+            this.btnMonthlyInterest.Text = "Monthly Interest";
+            this.btnMonthlyInterest.UseVisualStyleBackColor = true;
+            this.btnMonthlyInterest.Click += new System.EventHandler(this.btnMonthlyInterest_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(808, 276);
+            this.ClientSize = new System.Drawing.Size(808, 323);
+            this.Controls.Add(this.btnMonthlyInterest);
+            this.Controls.Add(this.btnWithdrawFive);
+            this.Controls.Add(this.btnDepositFive);
             this.Controls.Add(this.cmbFilter);
             this.Controls.Add(this.lblFilter);
             this.Controls.Add(this.cmbSort);
@@ -263,6 +299,9 @@
         private System.Windows.Forms.ComboBox cmbSort;
         private System.Windows.Forms.Label lblFilter;
         private System.Windows.Forms.ComboBox cmbFilter;
+        private System.Windows.Forms.Button btnDepositFive;
+        private System.Windows.Forms.Button btnWithdrawFive;
+        private System.Windows.Forms.Button btnMonthlyInterest;
     }
 }
 

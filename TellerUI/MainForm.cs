@@ -99,6 +99,64 @@ namespace TellerUI
         {
             SummarizeAccounts();
         }
+
+        private async void btnDepositFive_Click(object sender, EventArgs e)
+        {
+            IEnumerable<IBankAccountMultipleCurrency> accounts = await vault.GetAccountsAsync();
+            foreach (IBankAccountMultipleCurrency account in accounts)
+            {
+                account.Deposit(5.0m);
+                try
+                {
+                    vault.UpdateAccount(account, true); // Don't write until all accounts are updated.
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(
+                        $"{account.AccountNumber}: {account.CustomerName} did not successfully receive the free money. Too bad.");
+                }
+            }
+            vault.FlushAccounts(); // TODO: error handling
+            SummarizeAccounts();
+        }
+
+        private async void btnWithdrawFive_Click(object sender, EventArgs e)
+        {
+            IEnumerable<IBankAccountMultipleCurrency> accounts = await vault.GetAccountsAsync();
+            foreach (IBankAccountMultipleCurrency account in accounts)
+            {
+                account.Withdraw(5.0m); // TODO: error handling. The account may not have sufficient funds for the withdraw.
+                try
+                {
+                    vault.UpdateAccount(account, true);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show($"{account.AccountNumber}: {account.CustomerName} didn't get the $5 withdraw.");
+                }
+            }
+            vault.FlushAccounts(); // TODO: error handling.
+            SummarizeAccounts();
+        }
+
+        private async void btnMonthlyInterest_Click(object sender, EventArgs e)
+        {
+            IEnumerable<IBankAccountMultipleCurrency> accounts = await vault.GetAccountsAsync();
+            foreach (IBankAccountMultipleCurrency account in accounts)
+            {
+                (account as IInterestBearing)?.AddMonthlyInterest();
+                try
+                {
+                    vault.UpdateAccount(account, true);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show($"{account.AccountNumber}: {account.CustomerName} didn't receive monthly interest.");
+                }
+            }
+            vault.FlushAccounts(); // TODO: error handling.
+            SummarizeAccounts();
+        }
         #endregion Events
 
         #region Helpers
